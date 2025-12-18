@@ -1,3 +1,4 @@
+CREATE TYPE "public"."orderStatus" AS ENUM('pending', 'completed', 'canceled');--> statement-breakpoint
 CREATE TABLE "customers" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"first_name" varchar(255) NOT NULL,
@@ -21,7 +22,7 @@ CREATE TABLE "order_items" (
 CREATE TABLE "orders" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"customer_id" uuid NOT NULL,
-	"order_status" "order_status" DEFAULT 'pending',
+	"orderStatus" "orderStatus" DEFAULT 'pending',
 	"created_at" timestamp (6) with time zone DEFAULT now(),
 	"updated_at" timestamp (6) with time zone
 );

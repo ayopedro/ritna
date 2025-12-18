@@ -8,77 +8,89 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
-const orderStatusEnum = pgEnum('order_status', [
+export const orderStatusEnum = pgEnum('orderStatus', [
   'pending',
   'completed',
   'canceled',
 ]);
 
-export const customersTable = pgTable('customers', {
+export const customers = pgTable('customers', {
   id: uuid('id').primaryKey().defaultRandom(),
   firstName: varchar('first_name', { length: 255 }).notNull(),
   lastName: varchar('last_name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   phone: varchar('phone', { length: 20 }),
-  createdAt: timestamp('created_at', { precision: 6, withTimezone: true }).defaultNow(),
+  createdAt: timestamp('created_at', {
+    precision: 6,
+    withTimezone: true,
+  }).defaultNow(),
   updatedAt: timestamp('updated_at', { precision: 6, withTimezone: true }),
 });
 
-export const productsTable = pgTable('products', {
+export const products = pgTable('products', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 255 }).notNull(),
   description: varchar('description', { length: 1000 }),
   price: integer('price').notNull(),
-  createdAt: timestamp('created_at', { precision: 6, withTimezone: true }).defaultNow(),
+  createdAt: timestamp('created_at', {
+    precision: 6,
+    withTimezone: true,
+  }).defaultNow(),
   updatedAt: timestamp('updated_at', { precision: 6, withTimezone: true }),
 });
 
-export const ordersTable = pgTable('orders', {
+export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   customerId: uuid('customer_id')
     .notNull()
-    .references(() => customersTable.id),
-  status: orderStatusEnum('order_status').default('pending'),
-  createdAt: timestamp('created_at', { precision: 6, withTimezone: true }).defaultNow(),
+    .references(() => customers.id),
+  status: orderStatusEnum('orderStatus').default('pending'),
+  createdAt: timestamp('created_at', {
+    precision: 6,
+    withTimezone: true,
+  }).defaultNow(),
   updatedAt: timestamp('updated_at', { precision: 6, withTimezone: true }),
 });
 
-export const orderItemsTable = pgTable('order_items', {
+export const orderItems = pgTable('order_items', {
   id: uuid('id').primaryKey().defaultRandom(),
   orderId: uuid('order_id')
     .notNull()
-    .references(() => ordersTable.id),
+    .references(() => orders.id),
   productId: uuid('product_id')
     .notNull()
-    .references(() => productsTable.id),
+    .references(() => products.id),
   quantity: integer('quantity').notNull().default(1),
-  createdAt: timestamp('created_at', { precision: 6, withTimezone: true }).defaultNow(),
+  createdAt: timestamp('created_at', {
+    precision: 6,
+    withTimezone: true,
+  }).defaultNow(),
   updatedAt: timestamp('updated_at', { precision: 6, withTimezone: true }),
 });
 
-export const customersRelations = relations(customersTable, ({ many }) => ({
-  orders: many(ordersTable),
+export const customersRelations = relations(customers, ({ many }) => ({
+  orders: many(orders),
 }));
 
-export const productsRelations = relations(productsTable, ({ many }) => ({
-  orderItems: many(orderItemsTable),
+export const productsRelations = relations(products, ({ many }) => ({
+  orderItems: many(orderItems),
 }));
 
-export const ordersRelations = relations(ordersTable, ({ one, many }) => ({
-  customer: one(customersTable, {
-    fields: [ordersTable.customerId],
-    references: [customersTable.id],
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  customer: one(customers, {
+    fields: [orders.customerId],
+    references: [customers.id],
   }),
-  orderItems: many(orderItemsTable),
+  orderItems: many(orderItems),
 }));
 
-export const orderItemsRelations = relations(orderItemsTable, ({ one }) => ({
-  order: one(ordersTable, {
-    fields: [orderItemsTable.orderId],
-    references: [ordersTable.id],
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
   }),
-  product: one(productsTable, {
-    fields: [orderItemsTable.productId],
-    references: [productsTable.id],
+  product: one(products, {
+    fields: [orderItems.productId],
+    references: [products.id],
   }),
 }));

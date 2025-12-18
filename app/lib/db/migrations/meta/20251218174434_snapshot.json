@@ -1,5 +1,5 @@
 {
-  "id": "cadf6cec-27b6-47ef-8d66-d67ffe83928a",
+  "id": "5c2f7b61-5633-4cb2-b14f-d56d1e7c9fce",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -165,9 +165,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "order_status": {
-          "name": "order_status",
-          "type": "order_status",
+        "orderStatus": {
+          "name": "orderStatus",
+          "type": "orderStatus",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
@@ -261,7 +261,17 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.orderStatus": {
+      "name": "orderStatus",
+      "schema": "public",
+      "values": [
+        "pending",
+        "completed",
+        "canceled"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},
