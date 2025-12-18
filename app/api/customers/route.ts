@@ -1,5 +1,5 @@
 import { NextResponse as Response } from 'next/server';
-import db from '@/app/lib/db';
+import { db } from '@/app/lib/db';
 import { customers } from '@/app/lib/db/schema';
 import { CustomerInsertSchema } from '@/app/lib/validator';
 import AppUtils from '@/app/lib/utils';
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         message: 'Error creating customer',
-        error: error.cause?.detail || 'Unknown error',
+        error: error?.cause?.detail || error?.message || 'Unknown error',
       },
       { status: 500 }
     );
