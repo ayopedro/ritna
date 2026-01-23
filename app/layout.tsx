@@ -16,6 +16,11 @@ const firaMono = Fira_Mono({
 export const metadata: Metadata = {
   title: 'Home - RITNA',
   description: 'Rumbles In The New Academy. A book by Sub-Lieutenant Oluwafemi Akinwumi.',
+  icons: {
+    apple: '/apple-touch-icon.png',
+    icon: '/favicon-32x32.png',
+    shortcut: '/favicon-16x16.png',
+  }
 };
 
 export default function RootLayout({
