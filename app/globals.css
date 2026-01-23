@@ -44,3 +44,7 @@ code, pre {
 .btn-secondary {
   @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
 }
+
+.hero {
+  @apply flex h-screen items-center justify-center text-white bg-cover bg-center bg-blend-multiply bg-[url('/assets/ritna-bg.jpeg'),linear-gradient(to_bottom,rgba(0,0,0,0.9),rgba(0,0,0,0.7),rgba(0,0,0,0.9))]
+}
