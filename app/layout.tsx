@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Open_Sans, Fira_Mono } from 'next/font/google';
 import './globals.css';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from '@/app/components/ui/sonner';
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',

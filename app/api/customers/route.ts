@@ -2,7 +2,7 @@ import { NextResponse as Response } from 'next/server';
 import { db } from '@/app/lib/db';
 import { customers } from '@/app/lib/db/schema';
 import { CustomerInsertSchema } from '@/app/lib/validators/db';
-import AppUtils from '@/app/lib/utils';
+import AppUtils from '@/app/lib/app.utils';
 import { eq } from 'drizzle-orm';
 
 export async function GET() {

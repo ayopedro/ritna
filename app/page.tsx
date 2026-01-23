@@ -7,10 +7,6 @@ import Waitlist from './components/waitlist';
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleModal = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
     <main className='hero'>
       <div className='flex flex-col items-center justify-center gap-4 md:gap-8 text-center'>
@@ -23,16 +19,17 @@ export default function Home() {
         <p className='md:text-xl'>
           A story of chaos and travails from the mad house
         </p>
-        <button className='btn btn-secondary' onClick={handleModal}>
+        <button className='btn btn-secondary' onClick={() => setIsOpen(true)}>
           Join Waitlist
         </button>
       </div>
       <Modal
         isOpen={isOpen}
-        onClose={handleModal}
+        onClose={() => setIsOpen(false)}
         title='Join the RITNA Waitlist'
+        description='Registration form for the RITNA waitlist'
       >
-        <Waitlist />
+        <Waitlist onSuccess={() => setIsOpen(false)} />
       </Modal>
     </main>
   );
