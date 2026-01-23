@@ -26,9 +26,19 @@ export async function addToWaitlist(
     };
   }
 
-  const { email, fName, lName } = validatedFields;
+  const { email, firstName, lastName } = validatedFields;
 
-  console.log('Validated Waitlist Data:', { email, fName, lName });
+  const isExisting = true; // Replace with actual check
+
+  if (isExisting) {
+    return {
+      success: false,
+      errors: { email: ['This email is already on the waitlist.'] },
+      message: 'You are already on the waitlist.',
+    };
+  }
+
+  console.log('Validated Waitlist Data:', { email, firstName, lastName });
 
   return {
     success: true,

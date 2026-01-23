@@ -15,30 +15,30 @@ const Waitlist = ({ onSuccess }: WaitlistProps) => {
     if (state?.success) {
       toast.success('You have been added to the waitlist!');
       onSuccess?.();
-    } else if (state?.success === false) {
-      toast.error(state.message || 'Something went wrong');
+    } else {
+      toast.error(state?.message || 'Something went wrong');
     }
   }, [state, onSuccess]);
 
   return (
     <form action={formAction} className='form' autoComplete='off'>
       <div className='form-group'>
-        <label htmlFor='fName'>
+        <label htmlFor='firstName'>
           First Name<span className='text-red-500'>*</span>
         </label>
         <input
           type='text'
-          name='fName'
+          name='firstName'
           placeholder='John'
           required
           className='form-input'
         />
       </div>
       <div className='form-group'>
-        <label htmlFor='lName'>Last Name</label>
+        <label htmlFor='lastName'>Last Name</label>
         <input
           type='text'
-          name='lName'
+          name='lastName'
           placeholder='Doe'
           className='form-input'
         />
