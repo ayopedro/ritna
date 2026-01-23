@@ -8,6 +8,13 @@
       "when": 1766079874749,
       "tag": "20251218174434_initial migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769189603794,
+      "tag": "20260123173323_add waitlist",
+      "breakpoints": true
     }
   ]
 }
