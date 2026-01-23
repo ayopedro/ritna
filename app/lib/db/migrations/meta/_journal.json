@@ -15,6 +15,13 @@
       "when": 1769189603794,
       "tag": "20260123173323_add waitlist",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769202180955,
+      "tag": "20260123210300_add category to waitlist",
+      "breakpoints": true
     }
   ]
 }

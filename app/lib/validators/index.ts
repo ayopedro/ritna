@@ -43,4 +43,7 @@ export const waitlistSchema = z.object({
     error: (iss) =>
       !iss.input ? 'Email is required' : 'Invalid email address',
   }),
+  category: z.enum(['civilian', 'military'], {
+    error: 'Category is required',
+  }),
 });

@@ -17,7 +17,7 @@ export default function Home() {
           <p className='tracking-[20px] font-semibold'>RITNA</p>
         </div>
         <p className='md:text-xl'>
-          A story of chaos and travails from the mad house
+          A story of chaos and travails from the &quot;MAD HOUSE&quot;
         </p>
         <button className='btn btn-secondary' onClick={() => setIsOpen(true)}>
           Join Waitlist
@@ -27,7 +27,7 @@ export default function Home() {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         title='Join the RITNA Waitlist'
-        description='Registration form for the RITNA waitlist'
+        description='Be the first to know when RITNA is released!'
       >
         <Waitlist onSuccess={() => setIsOpen(false)} />
       </Modal>

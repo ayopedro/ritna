@@ -108,6 +108,10 @@ code, pre {
   @apply text-sm;
 }
 
+.form-error {
+  @apply text-red-600 text-sm mt-1;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
