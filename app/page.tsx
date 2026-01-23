@@ -1,14 +1,39 @@
+'use client';
+
+import { useState } from 'react';
+import Modal from './components/modal';
+import Waitlist from './components/waitlist';
+
 export default function Home() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleModal = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <main className="hero">
-      <div className="flex flex-col items-center justify-center gap-8">
-        <div className="flex flex-col items-center justify-center">
-          <h1 className="text-8xl font-bold">Rumbles In The New Academy</h1>
-          <p className="tracking-[20px] font-semibold">RITNA</p>
+    <main className='hero'>
+      <div className='flex flex-col items-center justify-center gap-4 md:gap-8 text-center'>
+        <div className='flex flex-col items-center justify-center gap-4'>
+          <h1 className='text-4xl md:text-8xl font-bold'>
+            Rumbles In The New Academy
+          </h1>
+          <p className='tracking-[20px] font-semibold'>RITNA</p>
         </div>
-        <p className="text-xl">A story of chaos and travails from the mad house</p>
-        <button className="btn btn-secondary">Join Waitlist</button>
+        <p className='md:text-xl'>
+          A story of chaos and travails from the mad house
+        </p>
+        <button className='btn btn-secondary' onClick={handleModal}>
+          Join Waitlist
+        </button>
       </div>
+      <Modal
+        isOpen={isOpen}
+        onClose={handleModal}
+        title='Join the RITNA Waitlist'
+      >
+        <Waitlist />
+      </Modal>
     </main>
   );
 }
