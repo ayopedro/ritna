@@ -1,7 +1,7 @@
 import { NextResponse as Response } from 'next/server';
 import { db } from '@/app/lib/db';
 import { customers } from '@/app/lib/db/schema';
-import { CustomerInsertSchema } from '@/app/lib/validators/db';
+import { CustomerInsertSchema } from '@/app/lib/validators';
 import AppUtils from '@/app/lib/app.utils';
 import { eq } from 'drizzle-orm';
 

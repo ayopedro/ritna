@@ -68,6 +68,17 @@ export const orderItems = pgTable('order_items', {
   updatedAt: timestamp('updated_at', { precision: 6, withTimezone: true }),
 });
 
+export const waitlist = pgTable('waitlist', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  firstName: varchar('first_name', { length: 255 }).notNull(),
+  lastName: varchar('last_name', { length: 255 }),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  createdAt: timestamp('created_at', {
+    precision: 6,
+    withTimezone: true,
+  }).defaultNow(),
+});
+
 export const customersRelations = relations(customers, ({ many }) => ({
   orders: many(orders),
 }));

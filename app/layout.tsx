@@ -33,7 +33,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={`${openSans.variable} ${firaMono.variable} antialiased`}>
         {children}
-        <Toaster />
+        <Toaster richColors />
       </body>
     </html>
   );
