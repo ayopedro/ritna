@@ -18,7 +18,7 @@ export function Waitlist() {
           </p>
         </div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 w-1/2 mx-auto'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 md:w-1/2 mx-auto'>
           <div className='bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 text-left'>
             <div className='bg-blue-50 p-2 rounded-lg'>
               <Gift className='text-blue-600 w-5 h-5' />
@@ -38,7 +38,7 @@ export function Waitlist() {
           </div>
         </div>
 
-        <div className='flex flex-col sm:flex-row w-2/3 mx-auto gap-3'>
+        <div className='flex flex-col sm:flex-row md:w-2/3 mx-auto gap-3'>
           <WaitlistForm />
         </div>
 
