@@ -1,9 +1,10 @@
 import Image from "next/image";
-import { BookOpen, ArrowRight } from "lucide-react";
+import { BookOpen } from "lucide-react";
+import { Button } from "@/components/button";
 
 export function WishlistHeader() {
   return (
-    <section className="w-full max-w-[1200px] mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+    <section className="w-full max-w-[1400px] mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-center">
       <div className="flex flex-col items-start lg:pr-12">
         <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full text-sm font-medium text-[#187296] shadow-sm mb-8">
           <BookOpen className="w-4 h-4" />
@@ -16,27 +17,19 @@ export function WishlistHeader() {
         </h1>
 
         <p className="text-[#1c2c36] text-lg max-w-[28rem] mb-10 leading-relaxed font-medium">
-          A sweeping literary novel about History, Humor, Discipline,
-          Camaraderie, Indelible Memories. Join the waitlist to be the first to
-          read it.
+          History. Humour. Discipline. Camaraderie. Indelible Memories. Join the
+          waitlist to be the first to read it.
         </p>
 
         <form className="flex flex-col sm:flex-row gap-3 w-full mb-8">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="bg-[#8ab5c4] placeholder:text-gray-100/80 text-white border-none focus:ring-2 focus:ring-[#1a5f78] rounded-xl px-5 py-3.5 w-full sm:max-w-[280px] outline-none shadow-inner"
-            required
-          />
-          <button
+          <Button
             type="submit"
-            className="bg-[#157a97] hover:bg-[#12647c] transition-colors text-white font-medium px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 whitespace-nowrap shadow-md"
-          >
-            Join Waitlist <ArrowRight className="w-4 h-4" />
-          </button>
+            text="Join Waitlist"
+            className="bg-[#157a97] hover:bg-[#12647c] text-white"
+          />
         </form>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <div className="flex -space-x-3">
             <Image
               src="https://i.pravatar.cc/100?img=44"
@@ -70,9 +63,9 @@ export function WishlistHeader() {
         <Image
           src="/book-blue.png"
           alt="Rumbles in the New Academy Book"
-          width={700}
-          height={700}
-          className="w-full max-w-[550px] h-auto object-contain drop-shadow-[0_25px_25px_rgba(0,0,0,0.15)]"
+          width={1000}
+          height={1000}
+          className="w-full max-w-[900px] h-auto object-contain drop-shadow-[0_25px_25px_rgba(0,0,0,0.15)]"
           priority
         />
       </div>

@@ -34,7 +34,7 @@ export function Footer() {
         </div>
 
         <div className="text-slate-500 text-sm">
-          © 2026 Olufemi Akinwunmi. All rights reserved.
+          © {new Date().getFullYear()} Olufemi Akinwunmi. All rights reserved.
         </div>
       </div>
     </footer>

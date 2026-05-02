@@ -26,7 +26,7 @@ export function AboutAuthor() {
           OLUFEMI AKINWUNMI
         </h2>
 
-        <div className="text-[#5e6a75] text-[15px] leading-[1.8] flex flex-col gap-5 mb-12">
+        <div className="text-[#5e6a75] text-[15px] leading-[1.8] flex flex-col gap-5 mb-12 text-justify">
           <p>
             &quot;Olufemi Akinwunmi is a serving officer of the Nigerian Navy and a creative whose works sit at the intersection of shared experience and reflective storytelling.
           </p>
