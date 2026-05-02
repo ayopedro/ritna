@@ -1,152 +1,51 @@
-import { toast } from 'sonner';
-import { waitlistSchema } from '../lib/validators';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Gift, Bell } from 'lucide-react';
+import WaitlistForm from './waitlist-form';
 
-interface WaitlistProps {
-  onSuccess?: () => void;
-}
-
-type FormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  category: 'civilian' | 'military';
-};
-
-const Waitlist = ({ onSuccess }: WaitlistProps) => {
-  const initialFormData: FormData = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    category: 'civilian',
-  };
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting: isPending, errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(waitlistSchema),
-    defaultValues: initialFormData,
-  });
-
-  const submitForm: SubmitHandler<FormData> = async (formData) => {
-    toast.promise(
-      async () => {
-        const response = await fetch('/api/waitlist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || 'Failed to join waitlist');
-        }
-
-        onSuccess?.();
-        return result;
-      },
-      {
-        loading: 'Adding you to the list...',
-        success: 'You have been added to the waitlist!',
-        error: (err) => err.message,
-      },
-    );
-  };
-
+export function Waitlist() {
   return (
-      <form
-        onSubmit={handleSubmit(submitForm)}
-        className='form'
-        autoComplete='off'
-      >
-        <div className='form-group'>
-          <label htmlFor='firstName'>
-            First Name<span className='text-red-500'>*</span>
-          </label>
-          <input
-            type='text'
-            {...register('firstName')}
-            placeholder='John'
-            required
-            className='form-input'
-          />
-          {errors.firstName && (
-            <p className='form-error'>{errors.firstName.message}</p>
-          )}
+    <section className='w-full bg-[#eff6ff] py-24 px-6 text-center' id='waitlist'>
+      <div className='max-w-250 mx-auto'>
+        <div className='mb-12'>
+          <h3 className='text-blue-600 text-xs font-bold uppercase tracking-[0.3em] mb-4'>
+            Don&apos;t Miss Out
+          </h3>
+          <h2 className='text-[#1a2b3c] text-4xl md:text-5xl font-serif mb-6'>
+            Join the Waitlist Today
+          </h2>
+          <p className='text-slate-500 text-sm md:text-base max-w-md mx-auto leading-relaxed'>
+            Be among the first to experience this deeply moving story. Sign up
+            now and get exclusive early access.
+          </p>
         </div>
-        <div className='form-group'>
-          <label htmlFor='lastName'>
-            Last Name<span className='text-red-500'>*</span>
-          </label>
-          <input
-            type='text'
-            {...register('lastName')}
-            placeholder='Doe'
-            className='form-input'
-          />
-          {errors.lastName && (
-            <p className='form-error'>{errors.lastName.message}</p>
-          )}
-        </div>
-        <div className='form-group'>
-          <label htmlFor='email'>
-            Email<span className='text-red-500'>*</span>
-          </label>
-          <input
-            type='email'
-            {...register('email')}
-            placeholder='email@example.com'
-            required
-            className='form-input'
-          />
-          {errors.email && <p className='form-error'>{errors.email.message}</p>}
-        </div>
-        <div className='form-group'>
-          <label className='block mb-2'>
-            Category<span className='text-red-500'>*</span>
-          </label>
-          {errors.category && (
-            <p className='form-error'>{errors.category.message}</p>
-          )}
-          <div className='flex flex-row items-center gap-4'>
-            <div className='flex items-center gap-2'>
-              <input
-                type='radio'
-                {...register('category')}
-                value='civilian'
-                required
-                className='h-4 w-4 accent-blue-500'
-              />
-              <label htmlFor='category-civilian' className='cursor-pointer'>
-                Civilian
-              </label>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 w-1/2 mx-auto'>
+          <div className='bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 text-left'>
+            <div className='bg-blue-50 p-2 rounded-lg'>
+              <Gift className='text-blue-600 w-5 h-5' />
             </div>
-            <div className='flex items-center gap-2'>
-              <input
-                type='radio'
-                id='category-military'
-                {...register('category')}
-                value='military'
-                required
-                className='h-4 w-4 accent-blue-500'
-              />
-              <label htmlFor='category-military' className='cursor-pointer'>
-                Military
-              </label>
+            <p className='text-slate-600 text-xs font-medium leading-snug'>
+              Signed first edition for early supporters
+            </p>
+          </div>
+
+          <div className='bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 text-left'>
+            <div className='bg-blue-50 p-2 rounded-lg'>
+              <Bell className='text-blue-600 w-5 h-5' />
             </div>
+            <p className='text-slate-600 text-xs font-medium leading-snug'>
+              Be notified before the public launch
+            </p>
           </div>
         </div>
-        <input
-          type='submit'
-          value={isPending ? 'Please wait...' : 'Join Waitlist'}
-          className='btn btn-secondary mt-8'
-          disabled={isPending}
-        />
-      </form>
-  );
-};
 
-export default Waitlist;
+        <div className='flex flex-col sm:flex-row w-2/3 mx-auto gap-3'>
+          <WaitlistForm />
+        </div>
+
+        <p className='text-slate-400 text-[10px] uppercase tracking-widest'>
+          No spam, ever. Unsubscribe at any time.
+        </p>
+      </div>
+    </section>
+  );
+}

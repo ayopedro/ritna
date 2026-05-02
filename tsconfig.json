@@ -22,7 +22,7 @@
       "@/*": ["./*"],
       "@/app/*": ["./app/*"],
       "@/components/*": ["./app/components/*"],
-      "@/lib/*": ["./app/lib/*"],
+      "@/lib/*": ["./app/lib/*"]
     }
   },
   "include": [

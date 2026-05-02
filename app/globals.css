@@ -93,7 +93,7 @@ code, pre {
 }
 
 .form-group {
-  @apply flex flex-col gap-1;
+  @apply flex flex-col gap-1 text-start w-full;
 }
 
 .form-input {
@@ -113,6 +113,8 @@ code, pre {
 }
 
 :root {
+  --font-open-sans: "Open Sans", system-ui, -apple-system, sans-serif;
+  --font-fira-mono: "Fira Mono", monospace;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

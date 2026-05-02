@@ -1,0 +1,79 @@
+{
+  "reviews": [
+    {
+      "name": "Major General HM Dzarma (rtd)",
+      "title": "23rd Commandant, Nigerian Defence Academy. Pioneer Commandant of the New Academy.",
+      "quote": "Having witnessed the Nigerian Defence Academy at a defining moment in its history, when the institution transitioned to its permanent home and entered a new chapter of growth, I find in Rumbles in the New Academy a vivid and thoughtful account of the life, traditions, and formative experiences that shape its cadets. This book captures the enduring spirit of the Academy and will stand as an important record of the journey that continues to produce officers of character and leadership.",
+      "avatar": "https://i.pravatar.cc/100?u=dzarma"
+    },
+    {
+      "name": "Major General Emeka Onwuamaegbu (rtd)",
+      "title": "25th Commandant, Nigerian Defence Academy.",
+      "quote": "The reflections captured in Rumbles in the New Academy evoke deep nostalgia and pride. The narrative highlights both continuity and change; from my formative cadet years at the old Academy to leadership responsibilities at the new permanent site. Ultimately, the Nigerian Defence Academy remains not only a training institution but also a lifelong community that shapes character, fosters enduring friendships, and instills the enduring values of loyalty and courage in all who pass through its gates.",
+      "avatar": "https://i.pravatar.cc/100?u=emeka"
+    },
+    {
+      "name": "Ifeanyi Ndubuisi",
+      "title": "CEO Boss Regalia",
+      "quote": "Your storytelling ability needs to be studied. You have an exceptional skill for weaving narratives that draw listeners in and leave them eagerly hanging on every word",
+      "avatar": "https://i.pravatar.cc/100?u=ifeanyi"
+    },
+    {
+      "name": "Major General IM Yusuf (rtd)",
+      "title": "31st Commandant, Nigerian Defence Academy, Chairman, Blue Horizon Schools.",
+      "quote": "A nostalgic but inspiring account of the beginning of a turbulent journey to the officer corps. It is obviously a well-researched and evidence-based narrative about key historical developments of the Nigerian Defence Academy in the first quarter of the 21st century.",
+      "avatar": "https://i.pravatar.cc/100?u=yusuf"
+    },
+    {
+      "name": "General MT Ibrahim (rtd)",
+      "title": "27th Commandant, Nigerian Defence Academy, Garkuwar Gumel dan Majalisar",
+      "quote": "An institution lives and thrives on its memories; Rumbles in the New Academy enriches us with our own memories.",
+      "avatar": "https://i.pravatar.cc/100?u=ibrahim"
+    }
+  ],
+  "chapters": [
+    {
+      "title": "Chapter One: The New Academy",
+      "items": [
+        "Why Are We Still At the Old Site?",
+        "The March To The Permanent Site"
+      ]
+    },
+    {
+      "title": "Chapter Two : Dreams and Dreamers",
+      "items": [
+        "An Aspirant",
+        "A second aspirant",
+        "A third aspirant"
+      ]
+    },
+    {
+      "title": "Chapter Three : What is the Mad House",
+      "items": [
+        "The Elephants of Burma",
+        "The Cheetahs of Mogadishu",
+        "The Black Panthers of Dalet",
+        "The Wolves of Abyssinia",
+        "Major General Aderonke Kale Female Lines",
+        "Cadet Appointments",
+        "The Academy in a Year"
+      ]
+    },
+    {
+      "title": "Chapter Four : First Term",
+      "items": [
+        "Preparatory Wing",
+        "Novice's Boxing",
+        "Drill Square Test",
+        "Camp Initial",
+        "Confidence Job",
+        "Pace Stick and Pacers",
+        "Academic Branch",
+        "Restriction",
+        "The Long One",
+        "Battalion Drill",
+        "Interior Economy"
+      ]
+    }
+  ]
+}

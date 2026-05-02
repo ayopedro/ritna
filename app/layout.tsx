@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Open_Sans, Fira_Mono } from 'next/font/google';
 import './globals.css';
-import { Toaster } from '@/app/components/ui/sonner';
+import Provider from './provider';
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
     icon: '/favicon-32x32.png',
     shortcut: '/favicon-16x16.png',
-  }
+  },
 };
 
 export default function RootLayout({
@@ -32,8 +32,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`${openSans.variable} ${firaMono.variable} antialiased`}>
-        {children}
-        <Toaster richColors />
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
