@@ -25,6 +25,7 @@ const WaitlistForm = () => {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    reset,
   } = useForm<JoinWaitlistFormData>({
     resolver: zodResolver(waitlistSchema),
     defaultValues: initialFormData,
@@ -35,7 +36,8 @@ const WaitlistForm = () => {
   const submitForm: SubmitHandler<JoinWaitlistFormData> = async (formData) => {
     mutate(formData, {
       onSuccess() {
-        toast.success("Successfully added to the waitlist")
+        toast.success("Successfully added to the waitlist");
+        reset();
       }
     });
   };
