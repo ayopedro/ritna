@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { BookOpen } from "lucide-react";
-import { Button } from "@/components/button";
+import { Button } from "./button";
 
 export function WishlistHeader() {
   return (
-    <section className="w-full max-w-[1400px] mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-center">
+    <section className="w-full max-w-350 mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-center">
       <div className="flex flex-col items-start lg:pr-12">
         <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full text-sm font-medium text-[#187296] shadow-sm mb-8">
           <BookOpen className="w-4 h-4" />
@@ -16,7 +16,7 @@ export function WishlistHeader() {
           <span className="text-[#20667e]">New Academy</span>
         </h1>
 
-        <p className="text-[#1c2c36] text-lg max-w-[28rem] mb-10 leading-relaxed font-medium">
+        <p className="text-[#1c2c36] text-lg max-w-md mb-10 leading-relaxed font-medium">
           History. Humour. Discipline. Camaraderie. Indelible Memories. Join the
           waitlist to be the first to read it.
         </p>
@@ -65,7 +65,7 @@ export function WishlistHeader() {
           alt="Rumbles in the New Academy Book"
           width={1000}
           height={1000}
-          className="w-full max-w-[900px] h-auto object-contain drop-shadow-[0_25px_25px_rgba(0,0,0,0.15)]"
+          className="w-full max-w-225 h-auto object-contain drop-shadow-[0_25px_25px_rgba(0,0,0,0.15)]"
           priority
         />
       </div>

@@ -1,19 +1,19 @@
-import { Gift, Bell, BookOpen } from "lucide-react";
-import { Button } from "@/components/button";
-import Waitlist from "@/components/waitlist";
+import { Gift, Bell } from "lucide-react";
+import { Button } from "./button";
+import Waitlist from "./waitlist";
 
 export function WishlistFooter() {
   return (
     <section className="w-full bg-[#eff6ff] py-24 px-6 text-center">
-      <div className="max-w-[1000px] mx-auto">
+      <div className="max-w-250 mx-auto">
         <div className="mb-12">
           <h3 className="text-blue-600 text-xs font-bold uppercase tracking-[0.3em] mb-4">
-            Don't Miss Out
+            Don&apos;t Miss Out
           </h3>
           <h2 className="text-[#1a2b3c] text-4xl md:text-5xl font-serif mb-6">
             Join the Waitlist Today
           </h2>
-          <p className="text-slate-500 text-sm md:text-base max-w-[600px] mx-auto leading-relaxed">
+          <p className="text-slate-500 text-sm md:text-base max-w-md mx-auto leading-relaxed">
             Be among the first to experience this deeply moving story. Sign up
             now and get exclusive early access.
           </p>

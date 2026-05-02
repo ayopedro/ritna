@@ -3,10 +3,10 @@ import { Award, PenTool, Globe } from "lucide-react";
 
 export function AboutAuthor() {
   return (
-    <section className="w-full max-w-[1200px] mx-auto px-6 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+    <section className="w-full max-w-300 mx-auto px-6 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
      
       <div className="w-full flex justify-center lg:justify-start">
-        <div className="bg-[#fcf7e8] rounded-3xl p-6 md:p-8 w-full max-w-[500px]">
+        <div className="bg-[#fcf7e8] rounded-3xl p-6 md:p-8 w-full max-w-125">
           <Image
             src="/Lt-kupid-pic.png"
             alt="Olufemi Akinwunmi"

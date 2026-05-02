@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import data from "@/data/data.json";
+import data from "../../lib/data/data.json";
 
 export function AboutBook() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -13,7 +13,7 @@ export function AboutBook() {
 
   return (
     <section className="w-full bg-[#0a1120] py-20 px-6">
-      <div className="max-w-[800px] mx-auto">
+      <div className="max-w-200 mx-auto">
         <div className="text-center mb-16">
           <h3 className="text-[#4fc3f7] text-xs font-bold uppercase tracking-[0.3em] mb-4">
             A Glimpse Inside
@@ -46,7 +46,7 @@ export function AboutBook() {
                 </button>
                 <div
                   className={`bg-[#e3ecf8] transition-all duration-300 ease-in-out overflow-hidden ${
-                    isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+                    isOpen ? "max-h-250 opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
                   <div className="p-8">
