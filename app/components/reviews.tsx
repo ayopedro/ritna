@@ -1,9 +1,9 @@
 import Image from "next/image";
-import data from "../../lib/data/data.json";
+import data from "@/lib/data.json";
 
 export function Reviews() {
   return (
-    <section className="w-full bg-[#fdfdfc] py-20 px-6">
+    <section className="w-full bg-[#fdfdfc] py-20 px-6" id="reviews">
       <div className="max-w-300 mx-auto">
         <div className="text-center mb-16">
           <h3 className="text-[#4285f4] text-xs font-bold uppercase tracking-[0.3em] mb-4">

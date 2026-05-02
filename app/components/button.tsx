@@ -10,7 +10,7 @@ export function Button({ text = "Join Waitlist", className, ...props }: ButtonPr
     <button
       {...props}
       className={cn(
-        "transition-all flex items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3.5 font-medium shadow-md",
+        "transition-all flex items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3.5 font-medium shadow-md cursor-pointer disabled:cursor-not-allowed",
         className
       )}
     >

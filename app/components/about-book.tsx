@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import data from "../../lib/data/data.json";
+import data from "@/lib/data.json";
 
 export function AboutBook() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -12,7 +12,7 @@ export function AboutBook() {
   };
 
   return (
-    <section className="w-full bg-[#0a1120] py-20 px-6">
+    <section className="w-full bg-[#0a1120] py-20 px-6" id="about-book">
       <div className="max-w-200 mx-auto">
         <div className="text-center mb-16">
           <h3 className="text-[#4fc3f7] text-xs font-bold uppercase tracking-[0.3em] mb-4">
@@ -33,7 +33,7 @@ export function AboutBook() {
               >
                 <button
                   onClick={() => toggleChapter(index)}
-                  className="w-full bg-[#374151] px-6 py-4 flex items-center justify-between hover:bg-[#3f4b5c] transition-colors"
+                  className="w-full bg-[#374151] px-6 py-4 flex items-center justify-between hover:bg-[#3f4b5c] transition-colors cursor-pointer"
                 >
                   <h4 className="text-white font-medium text-sm md:text-base">
                     {chapter.title}

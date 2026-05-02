@@ -1,149 +1,138 @@
-import { toast } from "sonner";
-import { waitlistSchema } from "@/lib/validators";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+'use client';
 
-interface WaitlistProps {
-  onSuccess?: () => void;
-}
+import { waitlistSchema } from '@/lib/validators';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { Button } from './button';
+import { useJoinWaitlistMutation } from '../services/mutations/wishlist';
+import toast from 'react-hot-toast';
 
-type FormData = {
+export type JoinWaitlistFormData = {
   firstName: string;
   lastName: string;
   email: string;
-  category: "civilian" | "military";
+  category: 'civilian' | 'military';
 };
 
-const Waitlist = ({ onSuccess }: WaitlistProps) => {
-  const initialFormData: FormData = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    category: "civilian",
+const Waitlist = () => {
+  const initialFormData: JoinWaitlistFormData = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    category: 'civilian',
   };
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting: isPending, errors },
-  } = useForm<FormData>({
+    formState: { errors, isValid },
+  } = useForm<JoinWaitlistFormData>({
     resolver: zodResolver(waitlistSchema),
     defaultValues: initialFormData,
   });
 
-  const submitForm: SubmitHandler<FormData> = async (formData) => {
-    toast.promise(
-      async () => {
-        const response = await fetch("/api/waitlist", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
+  const { mutate, isPending } = useJoinWaitlistMutation();
 
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "Failed to join waitlist");
-        }
-
-        onSuccess?.();
-        return result;
-      },
-      {
-        loading: "Adding you to the list...",
-        success: "You have been added to the waitlist!",
-        error: (err) => err.message,
-      },
-    );
+  const submitForm: SubmitHandler<JoinWaitlistFormData> = async (formData) => {
+    mutate(formData, {
+      onSuccess() {
+        toast.success("Successfully added to the waitlist")
+      }
+    });
   };
 
   return (
     <form
       onSubmit={handleSubmit(submitForm)}
-      className="form"
-      autoComplete="off"
+      className='form w-full p-4'
+      autoComplete='off'
     >
-      <div className="form-group">
-        <label htmlFor="firstName">
-          First Name<span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          {...register("firstName")}
-          placeholder="John"
-          required
-          className="form-input"
-        />
-        {errors.firstName && (
-          <p className="form-error">{errors.firstName.message}</p>
-        )}
+      <div className='flex flex-col md:flex-row justify-between gap-4'>
+        <div className='form-group'>
+          <label htmlFor='firstName'>
+            First Name<span className='text-red-500'>*</span>
+          </label>
+          <input
+            type='text'
+            {...register('firstName')}
+            placeholder='John'
+            required
+            className='form-input'
+          />
+          {errors.firstName && (
+            <p className='form-error'>{errors.firstName.message}</p>
+          )}
+        </div>
+        <div className='form-group'>
+          <label htmlFor='lastName'>
+            Last Name<span className='text-red-500'>*</span>
+          </label>
+          <input
+            type='text'
+            {...register('lastName')}
+            placeholder='Doe'
+            className='form-input'
+          />
+          {errors.lastName && (
+            <p className='form-error'>{errors.lastName.message}</p>
+          )}
+        </div>
       </div>
-      <div className="form-group">
-        <label htmlFor="lastName">
-          Last Name<span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          {...register("lastName")}
-          placeholder="Doe"
-          className="form-input"
-        />
-        {errors.lastName && (
-          <p className="form-error">{errors.lastName.message}</p>
-        )}
+      <div className='flex justify-between gap-4'>
+        <div className='form-group'>
+          <label htmlFor='email'>
+            Email<span className='text-red-500'>*</span>
+          </label>
+          <input
+            type='email'
+            {...register('email')}
+            placeholder='email@example.com'
+            required
+            className='form-input'
+          />
+          {errors.email && <p className='form-error'>{errors.email.message}</p>}
+        </div>
+        {/* TODO: Phone input to be added */}
       </div>
-      <div className="form-group">
-        <label htmlFor="email">
-          Email<span className="text-red-500">*</span>
-        </label>
-        <input
-          type="email"
-          {...register("email")}
-          placeholder="email@example.com"
-          required
-          className="form-input"
-        />
-        {errors.email && <p className="form-error">{errors.email.message}</p>}
-      </div>
-      <div className="form-group">
-        <label className="block mb-2">
-          Category<span className="text-red-500">*</span>
+      <div className='form-group'>
+        <label className='block mb-2'>
+          Category<span className='text-red-500'>*</span>
         </label>
         {errors.category && (
-          <p className="form-error">{errors.category.message}</p>
+          <p className='form-error'>{errors.category.message}</p>
         )}
-        <div className="flex flex-row items-center gap-4">
-          <div className="flex items-center gap-2">
+        <div className='flex flex-row items-center gap-4'>
+          <div className='flex items-center gap-2'>
             <input
-              type="radio"
-              {...register("category")}
-              value="civilian"
+              type='radio'
+              {...register('category')}
+              value='civilian'
               required
-              className="h-4 w-4 accent-blue-500"
+              className='h-4 w-4 accent-blue-500'
             />
-            <label htmlFor="category-civilian" className="cursor-pointer">
+            <label htmlFor='category-civilian' className='cursor-pointer'>
               Civilian
             </label>
           </div>
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             <input
-              type="radio"
-              id="category-military"
-              {...register("category")}
-              value="military"
+              type='radio'
+              id='category-military'
+              {...register('category')}
+              value='military'
               required
-              className="h-4 w-4 accent-blue-500"
+              className='h-4 w-4 accent-blue-500'
             />
-            <label htmlFor="category-military" className="cursor-pointer">
+            <label htmlFor='category-military' className='cursor-pointer'>
               Military
             </label>
           </div>
         </div>
       </div>
-      <input
-        type="submit"
-        value={isPending ? "Please wait..." : "Join Waitlist"}
-        className="btn btn-secondary mt-8"
-        disabled={isPending}
+      <Button
+        type='submit'
+        text={isPending ? 'Please wait...' :'Join Now'}
+        className='bg-[#0a1120] text-white hover:bg-[#1a2b3c] px-8 py-3 w-full sm:w-auto mt-4'
+        disabled={isPending || !isValid}
       />
     </form>
   );

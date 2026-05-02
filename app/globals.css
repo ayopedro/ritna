@@ -93,7 +93,7 @@ code, pre {
 }
 
 .form-group {
-  @apply flex flex-col gap-1;
+  @apply flex flex-col gap-1 text-start w-full;
 }
 
 .form-input {
