@@ -5,14 +5,14 @@ export function AboutAuthor() {
   return (
     <section className="w-full max-w-300 mx-auto px-6 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start" id="about-author">
      
-      <div className="w-full flex justify-center lg:justify-start">
-        <div className="bg-[#fcf7e8] rounded-3xl p-6 md:p-8 w-full max-w-125">
+      <div className="w-full flex justify-center lg:justify-start relative">
+        <div className="bg-[#fcf7e8] rounded-3xl p-6 md:p-8 w-full max-w-125 relative h-150">
           <Image
-            src="/Lt-kupid-pic.png"
+            src="/assets/Lt-kupid-pic.png"
             alt="Olufemi Akinwunmi"
             width={500}
             height={600}
-            className="w-full h-auto rounded-2xl object-cover shadow-sm"
+            className="w-[90%] h-137.5 rounded-2xl object-cover shadow-sm absolute -bottom-4 left-6"
           />
         </div>
       </div>

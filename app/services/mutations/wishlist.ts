@@ -1,4 +1,4 @@
-import { JoinWaitlistFormData } from "@/app/components/waitlist";
+import { JoinWaitlistFormData } from "@/app/components/waitlist-form";
 import { useMutation } from "@tanstack/react-query"
 
 export const useJoinWaitlistMutation = () =>

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { BookOpen } from 'lucide-react';
 import { Button } from './button';
 
-export function WaitlistHeader() {
+export function Hero() {
   return (
     <section className='w-full max-w-350 mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-center'>
       <div className='flex flex-col items-start lg:pr-12'>
@@ -70,7 +70,7 @@ export function WaitlistHeader() {
 
       <div className='relative flex justify-center lg:justify-end mt-8 lg:mt-0'>
         <Image
-          src='/book-blue.png'
+          src='/assets/book-blue.png'
           alt='Rumbles in the New Academy Book'
           width={1000}
           height={1000}
