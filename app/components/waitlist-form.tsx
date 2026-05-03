@@ -97,11 +97,11 @@ const WaitlistForm = () => {
         </div>
         {/* TODO: Phone input to be added */}
         <div className="form-group">
-          <label htmlFor="phone">Phone Number</label>
+          <label htmlFor="phone">WhatsApp Number</label>
           <input
             type="tel"
             {...register("phone")}
-            placeholder="08021234567"
+            placeholder="+2348021234567"
             className="form-input"
           />
         </div>
