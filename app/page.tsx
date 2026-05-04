@@ -1,36 +1,23 @@
-'use client';
-
-import { useState } from 'react';
-import Modal from './components/modal';
-import Waitlist from './components/waitlist';
+import { Hero } from "@/app/components/hero";
+import { AboutAuthor } from "@/components/about-author";
+import { AboutBook } from "@/components/about-book";
+import { Reviews } from "@/components/reviews";
+import { Waitlist } from "@/app/components/waitlist";
+import { Footer } from "@/components/footer";
 
 export default function Home() {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <main className='hero'>
-      <div className='flex flex-col items-center justify-center gap-4 md:gap-8 text-center'>
-        <div className='flex flex-col items-center justify-center gap-4'>
-          <h1 className='text-4xl md:text-8xl font-bold'>
-            Rumbles In The New Academy
-          </h1>
-          <p className='tracking-[20px] font-semibold'>RITNA</p>
-        </div>
-        <p className='md:text-xl'>
-          A story of chaos and travails from the mad house
-        </p>
-        <button className='btn btn-secondary' onClick={() => setIsOpen(true)}>
-          Join Waitlist
-        </button>
+    <main className="min-h-screen flex flex-col">
+      <div className="w-full bg-[#9fcbda] flex justify-center">
+        <Hero />
       </div>
-      <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title='Join the RITNA Waitlist'
-        description='Registration form for the RITNA waitlist'
-      >
-        <Waitlist onSuccess={() => setIsOpen(false)} />
-      </Modal>
+      <div className="w-full bg-[#fdfdfc] flex justify-center">
+        <AboutAuthor />
+      </div>
+      <AboutBook />
+      <Reviews />
+      <Waitlist />
+      <Footer />
     </main>
   );
 }

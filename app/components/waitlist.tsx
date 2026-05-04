@@ -1,99 +1,51 @@
-import { toast } from 'sonner';
-import { waitlistSchema } from '../lib/validators';
-import { useState } from 'react';
+import { Gift, Bell } from 'lucide-react';
+import WaitlistForm from './waitlist-form';
 
-interface WaitlistProps {
-  onSuccess?: () => void;
-}
-
-const Waitlist = ({ onSuccess }: WaitlistProps) => {
-  const [isPending, setIsPending] = useState(false);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    setIsPending(true);
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-    const data = Object.fromEntries(formData);
-
-    const { success, data: validatedFields } = waitlistSchema.safeParse(data);
-    if (!success) {
-      setIsPending(false);
-      toast.error('Please check the form for errors');
-      return;
-    }
-
-    toast.promise(
-      async () => {
-        const response = await fetch('/api/waitlist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(validatedFields),
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || 'Failed to join waitlist');
-        }
-
-        onSuccess?.();
-        setIsPending(false);
-        return result;
-      },
-      {
-        loading: 'Adding you to the list...',
-        success: 'You have been added to the waitlist!',
-        error: (err) => err.message,
-      },
-    );
-  };
-
+export function Waitlist() {
   return (
-    <>
-      <form onSubmit={handleSubmit} className='form' autoComplete='off'>
-        <div className='form-group'>
-          <label htmlFor='firstName'>
-            First Name<span className='text-red-500'>*</span>
-          </label>
-          <input
-            type='text'
-            name='firstName'
-            placeholder='John'
-            required
-            className='form-input'
-          />
+    <section className='w-full bg-[#eff6ff] py-24 px-6 text-center' id='waitlist'>
+      <div className='max-w-250 mx-auto'>
+        <div className='mb-12'>
+          <h3 className='text-blue-600 text-xs font-bold uppercase tracking-[0.3em] mb-4'>
+            Don&apos;t Miss Out
+          </h3>
+          <h2 className='text-[#1a2b3c] text-4xl md:text-5xl font-serif mb-6'>
+            Join the Waitlist Today
+          </h2>
+          <p className='text-slate-500 text-sm md:text-base max-w-md mx-auto leading-relaxed'>
+            Be among the first to experience this deeply moving story. Sign up
+            now and get exclusive early access.
+          </p>
         </div>
-        <div className='form-group'>
-          <label htmlFor='lastName'>Last Name</label>
-          <input
-            type='text'
-            name='lastName'
-            placeholder='Doe'
-            className='form-input'
-          />
-        </div>
-        <div className='form-group'>
-          <label htmlFor='email'>
-            Email<span className='text-red-500'>*</span>
-          </label>
-          <input
-            type='email'
-            name='email'
-            placeholder='email@example.com'
-            required
-            className='form-input'
-          />
-        </div>
-        <input
-          type='submit'
-          value={isPending ? 'Please wait...' : 'Join Waitlist'}
-          className='btn btn-secondary mt-8'
-          disabled={isPending}
-        />
-      </form>
-    </>
-  );
-};
 
-export default Waitlist;
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 md:w-1/2 mx-auto'>
+          <div className='bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 text-left'>
+            <div className='bg-blue-50 p-2 rounded-lg'>
+              <Gift className='text-blue-600 w-5 h-5' />
+            </div>
+            <p className='text-slate-600 text-xs font-medium leading-snug'>
+              Signed first edition for early supporters
+            </p>
+          </div>
+
+          <div className='bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 text-left'>
+            <div className='bg-blue-50 p-2 rounded-lg'>
+              <Bell className='text-blue-600 w-5 h-5' />
+            </div>
+            <p className='text-slate-600 text-xs font-medium leading-snug'>
+              Be notified before the public launch
+            </p>
+          </div>
+        </div>
+
+        <div className='flex flex-col sm:flex-row md:w-2/3 mx-auto gap-3'>
+          <WaitlistForm />
+        </div>
+
+        <p className='text-slate-400 text-[10px] uppercase tracking-widest'>
+          No spam, ever. Unsubscribe at any time.
+        </p>
+      </div>
+    </section>
+  );
+}

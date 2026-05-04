@@ -14,6 +14,8 @@ export const orderStatusEnum = pgEnum('orderStatus', [
   'canceled',
 ]);
 
+export const categoryEnum = pgEnum('category', ['civilian', 'military']);
+
 export const customers = pgTable('customers', {
   id: uuid('id').primaryKey().defaultRandom(),
   firstName: varchar('first_name', { length: 255 }).notNull(),
@@ -73,6 +75,8 @@ export const waitlist = pgTable('waitlist', {
   firstName: varchar('first_name', { length: 255 }).notNull(),
   lastName: varchar('last_name', { length: 255 }),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  phone: varchar('phone', { length: 20 }),
+  category: categoryEnum('category').default('civilian').notNull(),
   createdAt: timestamp('created_at', {
     precision: 6,
     withTimezone: true,

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Open_Sans, Fira_Mono } from 'next/font/google';
 import './globals.css';
-import { Toaster } from '@/app/components/ui/sonner';
+import Provider from './provider';
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -16,12 +16,12 @@ const firaMono = Fira_Mono({
 
 export const metadata: Metadata = {
   title: 'Home - RITNA',
-  description: 'Rumbles In The New Academy. A book by Sub-Lieutenant Oluwafemi Akinwumi.',
+  description: 'Rumbles In The New Academy.',
   icons: {
     apple: '/apple-touch-icon.png',
     icon: '/favicon-32x32.png',
     shortcut: '/favicon-16x16.png',
-  }
+  },
 };
 
 export default function RootLayout({
@@ -32,8 +32,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`${openSans.variable} ${firaMono.variable} antialiased`}>
-        {children}
-        <Toaster richColors />
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
