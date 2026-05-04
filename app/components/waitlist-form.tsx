@@ -2,8 +2,10 @@
 
 import { waitlistSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm, Controller } from "react-hook-form";
 import { Button } from "./button";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import { useJoinWaitlistMutation } from "../services/mutations/wishlist";
 import toast from "react-hot-toast";
 
@@ -26,6 +28,7 @@ const WaitlistForm = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isValid },
     reset,
   } = useForm<JoinWaitlistFormData>({
@@ -35,7 +38,7 @@ const WaitlistForm = () => {
 
   const { mutate, isPending } = useJoinWaitlistMutation();
 
-  const submitForm: SubmitHandler<JoinWaitlistFormData> = async (formData) => {
+  const submitForm = async (formData: JoinWaitlistFormData) => {
     mutate(formData, {
       onSuccess() {
         toast.success("Successfully added to the waitlist");
@@ -81,7 +84,7 @@ const WaitlistForm = () => {
           )}
         </div>
       </div>
-      <div className="flex justify-between gap-4">
+      <div className="flex flex-col md:flex-row justify-between gap-4">
         <div className="form-group">
           <label htmlFor="email">
             Email<span className="text-red-500">*</span>
@@ -95,15 +98,30 @@ const WaitlistForm = () => {
           />
           {errors.email && <p className="form-error">{errors.email.message}</p>}
         </div>
-        {/* TODO: Phone input to be added */}
+        {/* Phone input */}
         <div className="form-group">
-          <label htmlFor="phone">WhatsApp Number</label>
-          <input
-            type="tel"
-            {...register("phone")}
-            placeholder="+2348021234567"
-            className="form-input"
+          <label htmlFor="phone">
+            WhatsApp Number<span className="text-red-500">*</span>
+          </label>
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <PhoneInput
+                id="phone"
+                placeholder="8021234567"
+                value={value as any}
+                onChange={onChange}
+                defaultCountry="NG"
+                className="form-input focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+                numberInputProps={{
+                  className:
+                    "focus:outline-none border-none bg-transparent w-full ml-2",
+                }}
+              />
+            )}
           />
+          {errors.phone && <p className="form-error">{errors.phone.message}</p>}
         </div>
       </div>
       <div className="form-group">
