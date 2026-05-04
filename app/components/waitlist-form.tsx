@@ -4,7 +4,7 @@ import { waitlistSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button } from "./button";
-import { useJoinWaitlistMutation } from "../services/mutations/wishlist";
+import { useJoinWaitlistMutation } from "../services/mutations/waitlist";
 import toast from "react-hot-toast";
 
 export type JoinWaitlistFormData = {

@@ -3,8 +3,11 @@
 import Image from 'next/image';
 import { BookOpen } from 'lucide-react';
 import { Button } from './button';
+import { useGetWaitlistCount } from '../services/queries/waitlist';
 
 export function Hero() {
+  const { data } = useGetWaitlistCount();
+
   return (
     <section className='w-full max-w-350 mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-center'>
       <div className='flex flex-col items-start lg:pr-12'>
@@ -18,7 +21,7 @@ export function Hero() {
           <span className='text-[#20667e]'>New Academy</span>
         </h1>
 
-        <p className='text-[#1c2c36] text-lg max-w-md mb-10 leading-relaxed font-medium'>
+        <p className='text-[#1c2c36] text-lg max-w-md leading-relaxed font-medium'>
           History. Humour. Discipline. Camaraderie. Indelible Memories.
         </p>
         <p className='text-[#1c2c36] text-lg max-w-md mb-10 leading-relaxed font-medium'>
@@ -40,34 +43,36 @@ export function Hero() {
           />
         </div>
 
-        <div className='flex items-center gap-2'>
-          <div className='flex -space-x-3'>
-            <Image
-              src='https://i.pravatar.cc/100?img=44'
-              alt='Reader'
-              width={40}
-              height={40}
-              className='w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover'
-            />
-            <Image
-              src='https://i.pravatar.cc/100?img=47'
-              alt='Reader'
-              width={40}
-              height={40}
-              className='w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover'
-            />
-            <Image
-              src='https://i.pravatar.cc/100?img=48'
-              alt='Reader'
-              width={40}
-              height={40}
-              className='w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover'
-            />
+        {data?.totalSubscribers > 3 ? (
+          <div className='flex items-center gap-2'>
+            <div className='flex -space-x-3'>
+              <Image
+                src='https://i.pravatar.cc/100?img=44'
+                alt='Reader'
+                width={40}
+                height={40}
+                className='w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover'
+              />
+              <Image
+                src='https://i.pravatar.cc/100?img=47'
+                alt='Reader'
+                width={40}
+                height={40}
+                className='w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover'
+              />
+              <Image
+                src='https://i.pravatar.cc/100?img=48'
+                alt='Reader'
+                width={40}
+                height={40}
+                className='w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover'
+              />
+            </div>
+            <span className='text-sm font-medium text-[#2d404d]'>
+              {data?.totalSubscribers} readers on the waitlist
+            </span>
           </div>
-          <span className='text-sm font-medium text-[#2d404d]'>
-            2,400+ readers on the waitlist
-          </span>
-        </div>
+        ) : null}
       </div>
 
       <div className='relative flex justify-center lg:justify-end mt-8 lg:mt-0'>
