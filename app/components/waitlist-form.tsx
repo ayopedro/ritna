@@ -5,15 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm, Controller } from "react-hook-form";
 import { Button } from "./button";
 import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
 import toast from "react-hot-toast";
 import { useJoinWaitlistMutation } from "../services/mutations/waitlist";
+import "react-phone-number-input/style.css";
 
 export type JoinWaitlistFormData = {
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
+  phone: string;
   category: "civilian" | "military";
 };
 
