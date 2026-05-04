@@ -98,7 +98,7 @@ const WaitlistForm = () => {
           />
           {errors.email && <p className="form-error">{errors.email.message}</p>}
         </div>
-        {/* Phone input */}
+
         <div className="form-group">
           <label htmlFor="phone">
             WhatsApp Number<span className="text-red-500">*</span>
