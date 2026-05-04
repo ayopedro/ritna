@@ -40,17 +40,15 @@ export const waitlistSchema = z.object({
     error: (iss) =>
       !iss.input ? 'Email is required' : 'Invalid email address',
   }),
-  phone: z.string({
-    required_error: 'Phone number is required',
-    invalid_type_error: 'Phone number is required',
-  }).min(1, 'Phone number is required'),
+  phone: z
+    .string({
+      error: 'Phone number is required',
+    })
+    .min(1, 'Phone number is required')
+    .regex(/^(?:\+?[1-9]\d{0,2}[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?){1,2}\d{4}$/, {
+      error: 'Invalid phone number format',
+    }),
   category: z.enum(['civilian', 'military'], {
     error: 'Category is required',
   }),
-  phone: z
-    .string()
-    .regex(/^(?:\+?[1-9]\d{0,2}[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?){1,2}\d{4}$/, {
-      error: 'Invalid phone number format',
-    })
-    .optional(),
 });
