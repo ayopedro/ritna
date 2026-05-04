@@ -10,7 +10,7 @@ export function Hero() {
       <div className='flex flex-col items-start lg:pr-12'>
         <div className='inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full text-sm font-medium text-[#187296] shadow-sm mb-8'>
           <BookOpen className='w-4 h-4' />
-          <span>Coming Spring 2026</span>
+          <span>Coming Summer 2026</span>
         </div>
 
         <h1 className='text-5xl md:text-6xl lg:text-[4.5rem] font-serif text-gray-900 leading-[1.1] mb-6 tracking-tight'>
@@ -19,8 +19,10 @@ export function Hero() {
         </h1>
 
         <p className='text-[#1c2c36] text-lg max-w-md mb-10 leading-relaxed font-medium'>
-          History. Humour. Discipline. Camaraderie. Indelible Memories. Join the
-          waitlist to be the first to read it.
+          History. Humour. Discipline. Camaraderie. Indelible Memories.
+        </p>
+        <p className='text-[#1c2c36] text-lg max-w-md mb-10 leading-relaxed font-medium'>
+          Join the waitlist to be the first to read it.
         </p>
 
         <div className='flex flex-col sm:flex-row gap-3 w-full mb-8'>
