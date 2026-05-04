@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { email, firstName, lastName, category } = validatedFields!;
+  const { email, firstName, lastName, category, phone } = validatedFields!;
 
   const isExisting = await db
     .select()
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     );
   }
 
-  await db.insert(waitlist).values({ email, firstName, lastName, category });
+  await db.insert(waitlist).values({ email, firstName, lastName, category, phone });
 
   return NextResponse.json(
     {
