@@ -1,13 +1,14 @@
 "use client";
 
-import { waitlistSchema } from "@/lib/validators";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm, Controller } from "react-hook-form";
-import { Button } from "./button";
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-import { useJoinWaitlistMutation } from "../services/mutations/wishlist";
-import toast from "react-hot-toast";
+// import { waitlistSchema } from "@/lib/validators";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { SubmitHandler, useForm, Controller } from "react-hook-form";
+// import { Button } from "./button";
+// import PhoneInput from "react-phone-number-input";
+// import "react-phone-number-input/style.css";
+// import { useJoinWaitlistMutation } from "../services/mutations/waitlist";
+// import toast from "react-hot-toast";
+import { Preorder } from "./preorder";
 
 export type JoinWaitlistFormData = {
   firstName: string;
@@ -17,6 +18,7 @@ export type JoinWaitlistFormData = {
   category: "civilian" | "military";
 };
 
+/*
 const WaitlistForm = () => {
   const initialFormData: JoinWaitlistFormData = {
     firstName: "",
@@ -167,6 +169,11 @@ const WaitlistForm = () => {
       />
     </form>
   );
+};
+*/
+
+const WaitlistForm = () => {
+  return <Preorder />;
 };
 
 export default WaitlistForm;

@@ -39,7 +39,7 @@ export function Waitlist() {
         </div>
 
         <div className='flex flex-col sm:flex-row md:w-2/3 mx-auto gap-3'>
-          <WaitlistForm />
+          {/* <WaitlistForm /> */}
         </div>
 
         <p className='text-slate-400 text-[10px] uppercase tracking-widest'>

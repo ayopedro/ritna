@@ -2,7 +2,8 @@ import { Hero } from "@/app/components/hero";
 import { AboutAuthor } from "@/components/about-author";
 import { AboutBook } from "@/components/about-book";
 import { Reviews } from "@/components/reviews";
-import { Waitlist } from "@/app/components/waitlist";
+// import { Waitlist } from "@/app/components/waitlist";
+import { Preorder } from "@/app/components/preorder";
 import { Footer } from "@/components/footer";
 
 export default function Home() {
@@ -16,7 +17,8 @@ export default function Home() {
       </div>
       <AboutBook />
       <Reviews />
-      <Waitlist />
+      {/* <Waitlist /> */}
+      <Preorder />
       <Footer />
     </main>
   );
