@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 // import { waitlistSchema } from "@/lib/validators";
 // import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,15 +8,15 @@
 // import "react-phone-number-input/style.css";
 // import { useJoinWaitlistMutation } from "../services/mutations/waitlist";
 // import toast from "react-hot-toast";
-import { Preorder } from "./preorder";
+// import { Preorder } from "./preorder";
 
-export type JoinWaitlistFormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  category: "civilian" | "military";
-};
+// export type JoinWaitlistFormData = {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   phone?: string;
+//   category: "civilian" | "military";
+// };
 
 /*
 const WaitlistForm = () => {
@@ -172,8 +172,8 @@ const WaitlistForm = () => {
 };
 */
 
-const WaitlistForm = () => {
-  return <Preorder />;
-};
+// const WaitlistForm = () => {
+//   return <Preorder />;
+// };
 
-export default WaitlistForm;
+// export default WaitlistForm;
