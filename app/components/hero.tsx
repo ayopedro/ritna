@@ -1,19 +1,64 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { BookOpen } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Button } from "./button";
 import { useGetWaitlistCount } from "../services/queries/waitlist";
 
+const TARGET_DATE = new Date("2026-11-07T00:00:00");
+
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  isExpired: boolean;
+}
+
+function getTimeRemaining(): TimeLeft {
+  const total = TARGET_DATE.getTime() - Date.now();
+  if (total <= 0) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true };
+  }
+  const seconds = Math.floor((total / 1000) % 60);
+  const minutes = Math.floor((total / 1000 / 60) % 60);
+  const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(total / (1000 * 60 * 60 * 24));
+  return { days, hours, minutes, seconds, isExpired: false };
+}
+
 export function Hero() {
   const { data } = useGetWaitlistCount();
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
+
+  useEffect(() => {
+    setTimeLeft(getTimeRemaining());
+    const interval = setInterval(() => {
+      setTimeLeft(getTimeRemaining());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="w-full max-w-350 mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-center">
       <div className="flex flex-col items-start lg:pr-12">
         <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full text-sm font-medium text-[#187296] shadow-sm mb-8">
-          <BookOpen className="w-4 h-4" />
-          <span>Coming Summer 2026</span>
+          <Clock className="w-4 h-4 shrink-0 text-[#187296]" />
+          {timeLeft ? (
+            timeLeft.isExpired ? (
+              <span>Out Now</span>
+            ) : (
+              <span className="tabular-nums">
+                Launching in {timeLeft.days}d{" "}
+                {String(timeLeft.hours).padStart(2, "0")}h{" "}
+                {String(timeLeft.minutes).padStart(2, "0")}m{" "}
+                {String(timeLeft.seconds).padStart(2, "0")}s
+              </span>
+            )
+          ) : (
+            <span>Launching in...</span>
+          )}
         </div>
 
         <h1 className="text-5xl md:text-6xl lg:text-[4.5rem] font-serif text-gray-900 leading-[1.1] mb-6 tracking-tight">
