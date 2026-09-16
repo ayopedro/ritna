@@ -15,10 +15,8 @@ FROM base AS builder
 COPY --from=install /usr/src/app/node_modules ./node_modules
 COPY . .
 
-# Run the Next.js build and bundle the migration script
+# Build the standalone Next.js application.
 RUN bun run build
-RUN bun build ./app/lib/db/migrate.ts --outfile ./migrate.js --target bun
-RUN bun build ./app/lib/db/seed.ts --outfile ./seed.js --target bun
 
 # 4. Final Release stage
 FROM base AS release
@@ -27,23 +25,14 @@ FROM base AS release
 RUN groupadd --system --gid 1001 nodejs && \
     useradd --system --uid 1001 -g nodejs ritna
 
-# Copy Migration Assets (Bundled script + SQL files)
-COPY --from=builder /usr/src/app/migrate.js ./migrate.js
-COPY --from=builder /usr/src/app/seed.js ./seed.js
-COPY --from=builder /usr/src/app/app/lib/db/migrations ./app/lib/db/migrations
-
 # Copy Next.js Standalone Assets
 COPY --from=builder /usr/src/app/public ./public
 COPY --from=builder --chown=ritna:nodejs /usr/src/app/.next/standalone ./
 COPY --from=builder --chown=ritna:nodejs /usr/src/app/.next/static ./.next/static
-
-# Copy and set up the entrypoint script
-COPY entrypoint.sh ./
-RUN chmod +x entrypoint.sh
 
 USER ritna
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-ENTRYPOINT [ "./entrypoint.sh" ]
+CMD [ "bun", "server.js" ]

@@ -1,0 +1,40 @@
+name: Database maintenance
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Target environment
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      operation:
+        description: Database operation
+        required: true
+        type: choice
+        options:
+          - migrate
+          - seed
+          - migrate-and-seed
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    environment:
+      name: ritna / ${{ inputs.target }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.2.22'
+      - run: bun install --frozen-lockfile
+      - run: bun run db.apply
+        if: inputs.operation == 'migrate' || inputs.operation == 'migrate-and-seed'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - run: bun run db.seed
+        if: inputs.operation == 'seed' || inputs.operation == 'migrate-and-seed'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
