@@ -9,7 +9,16 @@ const formatDate = (date: Date | null) =>
   date ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' }).format(date) : '—';
 
 export default async function AdminPage() {
-  const [orderRows, waitlistRows, [reviewCount]] = await Promise.all([
+  const [
+    [orderCount],
+    [waitlistCount],
+    [reviewCount],
+    orderRows,
+    waitlistRows,
+  ] = await Promise.all([
+    db.select({ value: count() }).from(orders),
+    db.select({ value: count() }).from(waitlist),
+    db.select({ value: count() }).from(reviews),
     db
       .select({
         id: orders.id,
@@ -21,7 +30,8 @@ export default async function AdminPage() {
       })
       .from(orders)
       .innerJoin(customers, eq(orders.customerId, customers.id))
-      .orderBy(desc(orders.createdAt)),
+      .orderBy(desc(orders.createdAt))
+      .limit(100),
     db
       .select({
         id: waitlist.id,
@@ -33,8 +43,8 @@ export default async function AdminPage() {
         createdAt: waitlist.createdAt,
       })
       .from(waitlist)
-      .orderBy(desc(waitlist.createdAt)),
-    db.select({ value: count() }).from(reviews),
+      .orderBy(desc(waitlist.createdAt))
+      .limit(100),
   ]);
 
   return (
@@ -54,11 +64,11 @@ export default async function AdminPage() {
         <section aria-label='Overview' className='mb-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3'>
           <div className='rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:p-5'>
             <p className='text-sm text-slate-500'>Orders</p>
-            <p className='mt-2 text-3xl font-semibold tabular-nums'>{orderRows.length}</p>
+            <p className='mt-2 text-3xl font-semibold tabular-nums'>{orderCount.value}</p>
           </div>
           <div className='rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:p-5'>
             <p className='text-sm text-slate-500'>Waitlist</p>
-            <p className='mt-2 text-3xl font-semibold tabular-nums'>{waitlistRows.length}</p>
+            <p className='mt-2 text-3xl font-semibold tabular-nums'>{waitlistCount.value}</p>
           </div>
           <div className='rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:p-5'>
             <p className='text-sm text-slate-500'>Reviews</p>
