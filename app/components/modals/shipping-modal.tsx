@@ -1,8 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import React from "react";
+import { useForm, Controller } from "react-hook-form";
+import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import PhoneInput, {
+  isValidPhoneNumber,
+  getCountryCallingCode,
+} from "react-phone-number-input";
+import en from "react-phone-number-input/locale/en.json";
+import "react-phone-number-input/style.css";
+import { Modal } from "../modal";
 
 export interface ShippingDetails {
   fullName: string;
@@ -14,10 +22,59 @@ export interface ShippingDetails {
   deliveryNotes?: string;
 }
 
+export const NIGERIAN_STATES = [
+  "Abia",
+  "Adamawa",
+  "Akwa Ibom",
+  "Anambra",
+  "Bauchi",
+  "Bayelsa",
+  "Benue",
+  "Borno",
+  "Cross River",
+  "Delta",
+  "Ebonyi",
+  "Edo",
+  "Ekiti",
+  "Enugu",
+  "FCT - Abuja",
+  "Gombe",
+  "Imo",
+  "Jigawa",
+  "Kaduna",
+  "Kano",
+  "Katsina",
+  "Kebbi",
+  "Kogi",
+  "Kwara",
+  "Lagos",
+  "Nasarawa",
+  "Niger",
+  "Ogun",
+  "Ondo",
+  "Osun",
+  "Oyo",
+  "Plateau",
+  "Rivers",
+  "Sokoto",
+  "Taraba",
+  "Yobe",
+  "Zamfara",
+] as const;
+
+const countryLabels: Record<string, string> = {};
+for (const [code, name] of Object.entries(en)) {
+  try {
+    countryLabels[code] = `${name} (+${getCountryCallingCode(code as any)})`;
+  } catch {
+    countryLabels[code] = name;
+  }
+}
+
 interface ShippingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm?: (details: ShippingDetails) => void;
+  onConfirm?: (details: ShippingDetails) => Promise<void> | void;
   totalAmount?: number;
 }
 
@@ -27,286 +84,293 @@ export function ShippingModal({
   onConfirm,
   totalAmount,
 }: ShippingModalProps) {
-  const [formData, setFormData] = useState<ShippingDetails>({
-    fullName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    deliveryNotes: "",
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Prevent background scrolling when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  // Handle escape key to close
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.fullName.trim()) {
-      toast.error("Please enter your full name");
-      return;
-    }
-    if (!formData.email.trim() || !formData.email.includes("@")) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-    if (!formData.phone.trim()) {
-      toast.error("Please enter your phone number");
-      return;
-    }
-    if (!formData.address.trim()) {
-      toast.error("Please enter your delivery address");
-      return;
-    }
-    if (!formData.city.trim()) {
-      toast.error("Please enter your city");
-      return;
-    }
-    if (!formData.state.trim()) {
-      toast.error("Please enter your state");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    if (onConfirm) {
-      onConfirm(formData);
-    } else {
-      const amountText = totalAmount
-        ? ` for ₦${totalAmount.toLocaleString()}`
-        : "";
-      toast.success(
-        `Shipping information confirmed! Proceeding to payment${amountText}`,
-      );
-    }
-
-    // Reset shipping details fields
-    setFormData({
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ShippingDetails>({
+    defaultValues: {
       fullName: "",
       email: "",
       phone: "",
       address: "",
       city: "",
-      state: "",
+      state: "Lagos",
       deliveryNotes: "",
-    });
+    },
+    mode: "onTouched",
+  });
 
-    setIsSubmitting(false);
-    onClose();
+  const onSubmit = async (data: ShippingDetails) => {
+    try {
+      if (onConfirm) {
+        await onConfirm(data);
+      } else {
+        const amountText = totalAmount
+          ? ` for ₦${totalAmount.toLocaleString()}`
+          : "";
+        toast.success(
+          `Shipping information confirmed! Proceeding to payment${amountText}`,
+        );
+      }
+      reset();
+      onClose();
+    } catch {
+      toast.error(
+        "An error occurred while confirming details. Please try again.",
+      );
+    }
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="shipping-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-[2px] transition-all duration-200 animate-in fade-in"
-      onClick={onClose}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-[480px] bg-white rounded-[26px] p-6 sm:p-8 shadow-2xl transition-all duration-200 max-h-[92vh] overflow-y-auto"
+    <Modal isOpen={isOpen} onClose={onClose} title="Your shipping details">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-3.5 sm:gap-4"
       >
-        {/* Close Button Top Right */}
-        <button
-          type="button"
-          aria-label="Close modal"
-          onClick={onClose}
-          className="absolute top-5 right-5 sm:top-6 sm:right-6 w-8 h-8 rounded-full bg-[#505c6e] hover:bg-[#3d4756] text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs z-10"
-        >
-          <X className="w-4 h-4 stroke-[2.5]" />
-        </button>
-
-        {/* Modal Heading */}
-        <h2
-          id="shipping-modal-title"
-          className="text-2xl sm:text-[25px] font-bold text-slate-900 tracking-tight mt-1 mb-6 pr-10"
-        >
-          Your shipping details
-        </h2>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Full Name */}
-          <div className="flex flex-col">
-            <label
-              htmlFor="fullName"
-              className="text-xs sm:text-[13px] text-gray-500 font-normal mb-1.5"
-            >
-              Full name
-            </label>
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              required
-              value={formData.fullName}
-              onChange={handleChange}
-              placeholder="Ada Lovelace"
-              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white"
-            />
-          </div>
-
-          {/* Email Address */}
-          <div className="flex flex-col">
-            <label
-              htmlFor="email"
-              className="text-xs sm:text-[13px] text-gray-500 font-normal mb-1.5"
-            >
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="ada@example.com"
-              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white"
-            />
-          </div>
-
-          {/* Phone Number */}
-          <div className="flex flex-col">
-            <label
-              htmlFor="phone"
-              className="text-xs sm:text-[13px] text-gray-500 font-normal mb-1.5"
-            >
-              Phone number
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              required
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="080 1234 5678"
-              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white"
-            />
-          </div>
-
-          {/* Delivery Address */}
-          <div className="flex flex-col">
-            <label
-              htmlFor="address"
-              className="text-xs sm:text-[13px] text-gray-500 font-normal mb-1.5"
-            >
-              Delivery address
-            </label>
-            <input
-              id="address"
-              name="address"
-              type="text"
-              required
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="12 Freedom Way"
-              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white"
-            />
-          </div>
-
-          {/* City & State Grid */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div className="flex flex-col">
-              <label
-                htmlFor="city"
-                className="text-xs sm:text-[13px] text-gray-500 font-normal mb-1.5"
-              >
-                City
-              </label>
-              <input
-                id="city"
-                name="city"
-                type="text"
-                required
-                value={formData.city}
-                onChange={handleChange}
-                placeholder="Lagos"
-                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label
-                htmlFor="state"
-                className="text-xs sm:text-[13px] text-gray-500 font-normal mb-1.5"
-              >
-                State
-              </label>
-              <input
-                id="state"
-                name="state"
-                type="text"
-                required
-                value={formData.state}
-                onChange={handleChange}
-                placeholder="Lagos"
-                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white"
-              />
-            </div>
-          </div>
-
-          {/* Delivery Notes (optional) */}
-          <div className="flex flex-col">
-            <label
-              htmlFor="deliveryNotes"
-              className="text-xs sm:text-[13px] text-gray-500 font-normal mb-1.5"
-            >
-              Delivery notes (optional)
-            </label>
-            <input
-              id="deliveryNotes"
-              name="deliveryNotes"
-              type="text"
-              value={formData.deliveryNotes}
-              onChange={handleChange}
-              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-gray-400 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white"
-            />
-          </div>
-
-          {/* Confirm Information Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-black hover:bg-neutral-900 active:scale-[0.99] text-white font-medium py-4 px-6 rounded-full mt-2 transition-all duration-150 shadow-sm cursor-pointer flex items-center justify-center text-sm sm:text-base disabled:opacity-70 disabled:cursor-not-allowed"
+        <div className="flex flex-col">
+          <label
+            htmlFor="fullName"
+            className="text-xs text-gray-500 font-medium mb-1 sm:mb-1.5"
           >
-            Confirm information
-          </button>
-        </form>
-      </div>
-    </div>
+            Full name
+          </label>
+          <input
+            id="fullName"
+            type="text"
+            placeholder="Ada Lovelace"
+            aria-invalid={!!errors.fullName}
+            {...register("fullName", {
+              required: "Please enter your full name",
+              minLength: {
+                value: 2,
+                message: "Full name must be at least 2 characters",
+              },
+            })}
+            className={`w-full px-3.5 py-3 sm:px-4 sm:py-3.5 border rounded-xl text-base sm:text-sm text-slate-900 placeholder:text-gray-400 focus:outline-none transition-colors bg-white ${
+              errors.fullName
+                ? "border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                : "border-gray-200 focus:border-slate-800 focus:ring-1 focus:ring-slate-800"
+            }`}
+          />
+          {errors.fullName && (
+            <p className="text-[11px] text-red-500 mt-1 font-medium">
+              {errors.fullName.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col">
+          <label
+            htmlFor="email"
+            className="text-xs text-gray-500 font-medium mb-1 sm:mb-1.5"
+          >
+            Email address
+          </label>
+          <input
+            id="email"
+            type="email"
+            placeholder="ada@example.com"
+            aria-invalid={!!errors.email}
+            {...register("email", {
+              required: "Please enter your email address",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Please enter a valid email address",
+              },
+            })}
+            className={`w-full px-3.5 py-3 sm:px-4 sm:py-3.5 border rounded-xl text-base sm:text-sm text-slate-900 placeholder:text-gray-400 focus:outline-none transition-colors bg-white ${
+              errors.email
+                ? "border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                : "border-gray-200 focus:border-slate-800 focus:ring-1 focus:ring-slate-800"
+            }`}
+          />
+          {errors.email && (
+            <p className="text-[11px] text-red-500 mt-1 font-medium">
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col">
+          <label
+            htmlFor="phone"
+            className="text-xs text-gray-500 font-medium mb-1 sm:mb-1.5"
+          >
+            Phone number
+          </label>
+          <Controller
+            name="phone"
+            control={control}
+            rules={{
+              validate: (value) => {
+                if (!value || !value.trim()) {
+                  return "Please enter your phone number";
+                }
+                if (!isValidPhoneNumber(value)) {
+                  if (/^\+\d{1,4}$/.test(value.trim())) {
+                    return "Please enter your phone number";
+                  }
+                  return "Please enter a valid phone number";
+                }
+                return true;
+              },
+            }}
+            render={({ field: { onChange, value } }) => (
+              <PhoneInput
+                id="phone"
+                international
+                defaultCountry="NG"
+                labels={countryLabels}
+                placeholder="801 234 5678"
+                value={value}
+                onChange={(val) => onChange(val || "")}
+                className={`w-full px-3.5 py-3 sm:px-4 sm:py-3.5 border rounded-xl bg-white transition-colors flex items-center ${
+                  errors.phone
+                    ? "border-red-400 focus-within:border-red-500 focus-within:ring-1 focus-within:ring-red-500"
+                    : "border-gray-200 focus-within:border-slate-800 focus-within:ring-1 focus-within:ring-slate-800"
+                }`}
+                numberInputProps={{
+                  className:
+                    "focus:outline-none border-none bg-transparent w-full text-base sm:text-sm text-slate-900 placeholder:text-gray-400 ml-2.5",
+                }}
+              />
+            )}
+          />
+          {errors.phone && (
+            <p className="text-[11px] text-red-500 mt-1 font-medium">
+              {errors.phone.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col">
+          <label
+            htmlFor="address"
+            className="text-xs text-gray-500 font-medium mb-1 sm:mb-1.5"
+          >
+            Delivery address
+          </label>
+          <input
+            id="address"
+            type="text"
+            placeholder="12 Freedom Way"
+            aria-invalid={!!errors.address}
+            {...register("address", {
+              required: "Please enter your delivery address",
+              minLength: {
+                value: 4,
+                message: "Please enter a complete delivery address",
+              },
+            })}
+            className={`w-full px-3.5 py-3 sm:px-4 sm:py-3.5 border rounded-xl text-base sm:text-sm text-slate-900 placeholder:text-gray-400 focus:outline-none transition-colors bg-white ${
+              errors.address
+                ? "border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                : "border-gray-200 focus:border-slate-800 focus:ring-1 focus:ring-slate-800"
+            }`}
+          />
+          {errors.address && (
+            <p className="text-[11px] text-red-500 mt-1 font-medium">
+              {errors.address.message}
+            </p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+          <div className="flex flex-col">
+            <label
+              htmlFor="city"
+              className="text-xs text-gray-500 font-medium mb-1 sm:mb-1.5"
+            >
+              City
+            </label>
+            <input
+              id="city"
+              type="text"
+              placeholder="Lekki"
+              aria-invalid={!!errors.city}
+              {...register("city", {
+                required: "Please enter your city",
+              })}
+              className={`w-full px-3.5 py-3 sm:px-4 sm:py-3.5 border rounded-xl text-base sm:text-sm text-slate-900 placeholder:text-gray-400 focus:outline-none transition-colors bg-white ${
+                errors.city
+                  ? "border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-gray-200 focus:border-slate-800 focus:ring-1 focus:ring-slate-800"
+              }`}
+            />
+            {errors.city && (
+              <p className="text-[11px] text-red-500 mt-1 font-medium">
+                {errors.city.message}
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-col">
+            <label
+              htmlFor="state"
+              className="text-xs text-gray-500 font-medium mb-1 sm:mb-1.5"
+            >
+              State
+            </label>
+            <select
+              id="state"
+              aria-invalid={!!errors.state}
+              {...register("state", {
+                required: "Please select a state",
+              })}
+              className={`w-full px-3.5 py-3 sm:px-4 sm:py-3.5 border rounded-xl text-base sm:text-sm text-slate-900 focus:outline-none transition-colors bg-white cursor-pointer ${
+                errors.state
+                  ? "border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-gray-200 focus:border-slate-800 focus:ring-1 focus:ring-slate-800"
+              }`}
+            >
+              {NIGERIAN_STATES.map((stateName) => (
+                <option key={stateName} value={stateName}>
+                  {stateName}
+                </option>
+              ))}
+            </select>
+            {errors.state && (
+              <p className="text-[11px] text-red-500 mt-1 font-medium">
+                {errors.state.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <label
+            htmlFor="deliveryNotes"
+            className="text-xs text-gray-500 font-medium mb-1 sm:mb-1.5"
+          >
+            Delivery notes (optional)
+          </label>
+          <textarea
+            id="deliveryNotes"
+            rows={2}
+            {...register("deliveryNotes")}
+            className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 border border-gray-200 rounded-xl text-base sm:text-sm text-slate-900 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white resize-y min-h-[64px] sm:min-h-[80px]"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-black hover:bg-neutral-900 active:scale-[0.98] text-white font-medium py-3.5 sm:py-4 px-6 rounded-full mt-1 sm:mt-2 transition-all duration-150 shadow-sm cursor-pointer flex items-center justify-center gap-2 text-sm sm:text-base disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Processing...</span>
+            </>
+          ) : (
+            "Confirm information"
+          )}
+        </button>
+      </form>
+    </Modal>
   );
 }
 
