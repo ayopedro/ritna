@@ -1,0 +1,37 @@
+name: Playwright
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/ritna_test
+      ADMIN_USERNAME: ci-admin
+      ADMIN_PASSWORD: ci-only-password
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: ritna_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ritna_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run db.apply
+      - run: bun run db.seed
+      - run: bun run test:e2e

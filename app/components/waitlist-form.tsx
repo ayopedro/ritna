@@ -2,7 +2,7 @@
 
 import { waitlistSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { Button } from "./button";
 import PhoneInput from "react-phone-number-input";
 import toast from "react-hot-toast";
