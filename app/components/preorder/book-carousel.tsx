@@ -1,26 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { BOOK_IMAGES } from "./preorder.constants";
 
-export function BookCarousel() {
+export const BookCarousel = memo(function BookCarousel() {
   const [activeSlide, setActiveSlide] = useState<number>(0);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isHovered = useRef(false);
+  const isVisible = useRef(false);
 
   useEffect(() => {
-    if (isPaused) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible.current = entry.isIntersecting;
+    });
+    if (containerRef.current) observer.observe(containerRef.current);
+
     const timer = setInterval(() => {
+      if (isHovered.current || !isVisible.current || document.hidden) return;
       setActiveSlide((prev) => (prev + 1) % BOOK_IMAGES.length);
     }, 3000);
-    return () => clearInterval(timer);
-  }, [isPaused]);
+
+    return () => {
+      clearInterval(timer);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <div
+      ref={containerRef}
       className="w-full max-w-xl mx-auto lg:mx-0"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseEnter={() => { isHovered.current = true; }}
+      onMouseLeave={() => { isHovered.current = false; }}
       role="region"
       aria-roledescription="carousel"
       aria-label="Book preview gallery"
@@ -68,5 +80,4 @@ export function BookCarousel() {
       </div>
     </div>
   );
-}
-
+});

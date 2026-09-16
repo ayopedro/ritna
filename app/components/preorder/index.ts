@@ -1,4 +1,4 @@
-export * from "./types";
+export * from "../../lib/types";
 export * from "./preorder.constants";
 export * from "./book-carousel";
 export * from "./edition-card";

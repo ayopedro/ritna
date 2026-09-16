@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { CountdownBadge } from "./countdown-badge";
 import { Button } from "./button";
 import { useGetWaitlistCount } from "../services/queries/waitlist";
 
 export function Hero() {
   const { data } = useGetWaitlistCount();
+  const router = useRouter();
 
   return (
     <section className="w-full max-w-350 mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 lg:gap-16 items-center">
@@ -30,12 +32,7 @@ export function Hero() {
             type="button"
             text="Preorder Now"
             className="bg-[#157a97] hover:bg-[#12647c] text-white"
-            onClick={() => {
-              document.getElementById("preorder")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-            }}
+            onClick={() => router.push("/preorder")}
           />
         </div>
 

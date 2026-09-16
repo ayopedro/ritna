@@ -9,6 +9,7 @@
     "lint": "eslint",
     "db.generate": "drizzle-kit generate",
     "db.apply": "bun run ./app/lib/db/migrate.ts",
+    "db.seed": "bun run ./app/lib/db/seed.ts",
     "db.push": "drizzle-kit push",
     "studio": "drizzle-kit studio"
   },

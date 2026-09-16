@@ -1,7 +1,11 @@
 import Image from "next/image";
-import data from "@/lib/data.json";
+import { asc } from "drizzle-orm";
+import { db } from "@/app/lib/db";
+import { reviews } from "@/app/lib/db/schema";
 
-export function Reviews() {
+export async function Reviews() {
+  const reviewList = await db.select().from(reviews).orderBy(asc(reviews.displayOrder));
+
   return (
     <section className="w-full bg-[#fdfdfc] py-20 px-6" id="reviews">
       <div className="max-w-300 mx-auto">
@@ -15,9 +19,9 @@ export function Reviews() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {data.reviews.map((review, index) => (
+          {reviewList.map((review, index) => (
             <div
-              key={index}
+              key={review.id}
               className={`relative bg-[#f0f4f8] rounded-2xl p-8 flex flex-col justify-between ${
                 index === 4 ? "lg:col-span-1" : ""
               }`}

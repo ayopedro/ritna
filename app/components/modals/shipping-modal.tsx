@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -140,7 +139,7 @@ export function ShippingModal({
           <input
             id="fullName"
             type="text"
-            placeholder="Ada Lovelace"
+            placeholder="John Doe"
             aria-invalid={!!errors.fullName}
             {...register("fullName", {
               required: "Please enter your full name",
@@ -172,7 +171,7 @@ export function ShippingModal({
           <input
             id="email"
             type="email"
-            placeholder="ada@example.com"
+            placeholder="username@example.com"
             aria-invalid={!!errors.email}
             {...register("email", {
               required: "Please enter your email address",

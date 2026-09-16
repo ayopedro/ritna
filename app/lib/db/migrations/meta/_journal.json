@@ -29,6 +29,13 @@
       "when": 1777898624938,
       "tag": "20260504124344_odd_shooting_star",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789561101174,
+      "tag": "20260916121821_soft_thunderbolts",
+      "breakpoints": true
     }
   ]
 }
