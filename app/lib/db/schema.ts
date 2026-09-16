@@ -5,6 +5,7 @@ import {
   varchar,
   pgEnum,
   timestamp,
+  text,
   uuid,
 } from 'drizzle-orm/pg-core';
 
@@ -15,6 +16,12 @@ export const orderStatusEnum = pgEnum('orderStatus', [
 ]);
 
 export const categoryEnum = pgEnum('category', ['civilian', 'military']);
+
+export const bookTypeEnum = pgEnum('bookType', [
+  'hardcover',
+  'softcover',
+  'institutional',
+]);
 
 export const customers = pgTable('customers', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -81,6 +88,34 @@ export const waitlist = pgTable('waitlist', {
     precision: 6,
     withTimezone: true,
   }).defaultNow(),
+});
+
+export const books = pgTable('books', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: varchar('title', { length: 255 }).notNull(),
+  price: integer('price').notNull(),
+  type: bookTypeEnum('bookType').default('hardcover').notNull(),
+  image: varchar('image', { length: 255 }),
+  description: varchar('description', { length: 1000 }),
+  createdAt: timestamp('created_at', {
+    precision: 6,
+    withTimezone: true,
+  }).defaultNow(),
+  updatedAt: timestamp('updated_at', { precision: 6, withTimezone: true }),
+});
+
+export const reviews = pgTable('reviews', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 255 }).notNull(),
+  title: varchar('title', { length: 500 }).notNull(),
+  quote: text('quote').notNull(),
+  avatar: varchar('avatar', { length: 255 }).notNull(),
+  displayOrder: integer('display_order').notNull(),
+  createdAt: timestamp('created_at', {
+    precision: 6,
+    withTimezone: true,
+  }).defaultNow(),
+  updatedAt: timestamp('updated_at', { precision: 6, withTimezone: true }),
 });
 
 export const customersRelations = relations(customers, ({ many }) => ({
