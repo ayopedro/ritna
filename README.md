@@ -38,3 +38,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## Admin
 
 Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env.local` (see `.env.example`), then open `/admin`. The browser prompts for those credentials. The dashboard is read-only and remains unavailable until both values are configured.
+
+## End-to-end tests
+
+Run `bun run test:e2e` after installing Playwright Chromium. CI starts PostgreSQL, applies migrations, seeds the data, and runs the tests automatically.
