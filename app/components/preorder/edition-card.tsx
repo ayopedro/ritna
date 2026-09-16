@@ -16,7 +16,7 @@ export function EditionCard({
   onUpdateQuantity,
 }: EditionCardProps) {
   return book.type === BookEdition.INSTITUTIONAL ? (
-    <div className='border border-slate-200 rounded-2xl p-5 flex items-center justify-between gap-4 bg-white hover:border-slate-300 transition-colors shadow-xs'>
+    <div className='border border-slate-200 rounded-2xl p-5 flex flex-col items-start justify-between gap-4 bg-white hover:border-slate-300 transition-colors shadow-xs sm:flex-row sm:items-center'>
       <div className='flex flex-col gap-1'>
         <div className='flex items-center gap-2'>
           <span className='font-semibold text-slate-900 text-sm'>
@@ -32,9 +32,9 @@ export function EditionCard({
       </div>
     </div>
   ) : (
-    <div className='border border-slate-200 rounded-2xl p-5 flex items-center justify-between gap-4 bg-white hover:border-slate-300 transition-colors shadow-xs'>
-      <div className='flex flex-col gap-1'>
-        <div className='flex items-center gap-2'>
+    <div className='border border-slate-200 rounded-2xl p-5 flex flex-col items-start justify-between gap-4 bg-white hover:border-slate-300 transition-colors shadow-xs sm:flex-row sm:items-center'>
+      <div className='flex min-w-0 flex-col gap-1'>
+        <div className='flex flex-wrap items-center gap-2'>
           <span className='font-bold text-slate-950 text-sm tracking-wide'>
             {book.title}
           </span>

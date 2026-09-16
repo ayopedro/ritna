@@ -74,7 +74,7 @@ export function Preorder() {
         </p>
 
         <div className='grid gap-10 lg:grid-cols-2'>
-          <div>
+          <div className='min-w-0'>
             <BookCarousel />
             <div className='space-y-4'>
               <h2 className='text-lg font-bold text-slate-900'>
