@@ -18,6 +18,7 @@ COPY . .
 # Run the Next.js build and bundle the migration script
 RUN bun run build
 RUN bun build ./app/lib/db/migrate.ts --outfile ./migrate.js --target bun
+RUN bun build ./app/lib/db/seed.ts --outfile ./seed.js --target bun
 
 # 4. Final Release stage
 FROM base AS release
@@ -28,6 +29,7 @@ RUN groupadd --system --gid 1001 nodejs && \
 
 # Copy Migration Assets (Bundled script + SQL files)
 COPY --from=builder /usr/src/app/migrate.js ./migrate.js
+COPY --from=builder /usr/src/app/seed.js ./seed.js
 COPY --from=builder /usr/src/app/app/lib/db/migrations ./app/lib/db/migrations
 
 # Copy Next.js Standalone Assets
