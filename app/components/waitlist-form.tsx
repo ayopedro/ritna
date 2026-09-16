@@ -5,15 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "./button";
 import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-import { useJoinWaitlistMutation } from "../services/mutations/waitlist";
 import toast from "react-hot-toast";
+import { useJoinWaitlistMutation } from "../services/mutations/waitlist";
+import "react-phone-number-input/style.css";
 
 export type JoinWaitlistFormData = {
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
+  phone: string;
   category: "civilian" | "military";
 };
 
@@ -38,7 +38,7 @@ const WaitlistForm = () => {
 
   const { mutate, isPending } = useJoinWaitlistMutation();
 
-  const submitForm = async (formData: JoinWaitlistFormData) => {
+  const submitForm: SubmitHandler<JoinWaitlistFormData> = async (formData) => {
     mutate(formData, {
       onSuccess() {
         toast.success("Successfully added to the waitlist");
@@ -109,8 +109,8 @@ const WaitlistForm = () => {
             render={({ field: { onChange, value } }) => (
               <PhoneInput
                 id="phone"
-                placeholder="8021234567"
-                value={value as any}
+                placeholder="802 123 4567"
+                value={value as string}
                 onChange={onChange}
                 defaultCountry="NG"
                 className="form-input focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
