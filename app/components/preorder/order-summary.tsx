@@ -15,6 +15,7 @@ interface OrderSummaryProps {
   total: number;
   onUpdateQuantity: (id: string, quantity: number) => void;
   onPayNow: () => void;
+  variant?: 'sidebar' | 'drawer';
 }
 
 export function OrderSummary({
@@ -22,9 +23,16 @@ export function OrderSummary({
   total,
   onUpdateQuantity,
   onPayNow,
+  variant = 'sidebar',
 }: OrderSummaryProps) {
   return (
-    <div className='h-fit rounded-2xl border border-slate-200 bg-[#f8fafc] p-6 shadow-xs lg:sticky lg:top-8'>
+    <div
+      className={
+        variant === 'drawer'
+          ? 'bg-white'
+          : 'h-fit rounded-2xl border border-slate-200 bg-[#f8fafc] p-6 shadow-xs lg:sticky lg:top-8'
+      }
+    >
       <h2 className='mb-5 text-lg font-semibold text-slate-950'>Order summary</h2>
 
       <div className='mb-6 space-y-4 rounded-2xl border border-slate-100 bg-white p-4'>
