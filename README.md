@@ -42,3 +42,17 @@ Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env.local` (see `.env.example`), 
 ## End-to-end tests
 
 Run `bun run test:e2e` after installing Playwright Chromium. CI starts PostgreSQL, applies migrations, seeds the data, and runs the tests automatically.
+
+## API logging and access
+
+Admin access continues to use browser Basic Auth with `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Use HTTPS in production. There is no application login route or session cookie. Both `/admin` and private API handlers check credentials; API protection does not rely on the page proxy.
+
+Private APIs include admin overview, customer endpoints, order listing/detail, and payment listing. Public checkout, books, waitlist, callback, and signed webhook routes remain accessible. Private POST requests also require an `Origin` header matching the application origin.
+
+All API handlers write structured JSON logs to standard output/error. Your hosting platform can collect these logs; no external monitoring service is configured. Each response has an `X-Request-ID` header. Search that ID to correlate the route, method, response status, duration, and related service events. Routes are logged as templates, without query strings or customer identifiers from URLs.
+
+Events include `api.request_completed`, `api.unhandled_error`, `order.created`, `order.reused`, `payment.initialized`, `payment.verified`, `email.confirmation_sent`, and `email.confirmation_pending`. Unexpected errors record their type and recognized database/network code, without raw messages, SQL, request bodies, cookies, credentials, or customer contact details.
+
+The unimplemented order listing/detail, customer detail, and payment listing endpoints return HTTP 501 instead of placeholder successes. Customer lists are limited to 100 records. Unknown server errors return a generic JSON response rather than database details.
+
+Run `bun test tests/unit` for authentication, logging, payment, and email unit checks. Database integration and browser checks require the configured database and Playwright browser installation.

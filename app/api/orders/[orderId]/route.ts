@@ -1,10 +1,8 @@
-import { NextRequest } from 'next/server';
+import { withApi } from '@/app/lib/api/handler';
+import { NextResponse } from 'next/server';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ orderId: string }> }
-) {
-  const { orderId } = await params;
-
-  return Response.json({ message: `Hello Order ${orderId}!` });
+async function handleGET() {
+  return NextResponse.json({ success: false, message: 'This endpoint is not implemented.' }, { status: 501 });
 }
+
+export const GET = withApi('/api/orders/[orderId]', handleGET, true);

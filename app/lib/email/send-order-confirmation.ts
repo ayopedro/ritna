@@ -1,3 +1,4 @@
+import { log } from '@/app/lib/logger';
 import { eq } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
 import {
@@ -60,4 +61,5 @@ export async function sendOrderConfirmation(orderId: string) {
     .update(orderConfirmationEmails)
     .set({ providerId, sentAt: new Date() })
     .where(eq(orderConfirmationEmails.orderId, orderId));
+  log('info', 'email.confirmation_sent', { orderId, provider: 'resend' });
 }

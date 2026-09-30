@@ -1,3 +1,4 @@
+import { log } from '@/app/lib/logger';
 import { sendOrderConfirmation } from '@/app/lib/email/send-order-confirmation';
 import { and, eq, ne } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
@@ -46,11 +47,12 @@ export async function verifyOrderPayment(reference: string) {
           ),
         );
     });
+    log('info', 'payment.verified', { orderId: record.order.id, paymentId: record.payment.id, provider: 'paystack' });
     try {
       await sendOrderConfirmation(record.order.id);
     } catch {
       confirmationEmailPending = true;
-      console.error('Order confirmation email pending', {
+      log('warn', 'email.confirmation_pending', {
         orderId: record.order.id,
       });
     }

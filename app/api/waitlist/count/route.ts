@@ -1,9 +1,10 @@
+import { withApi } from '@/app/lib/api/handler';
 import { db } from '@/app/lib/db';
 import { waitlist } from '@/app/lib/db/schema';
 import { count } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+async function handleGET() {
   const totalSubscribers = await db
     .select({ count: count() })
     .from(waitlist)
@@ -18,3 +19,5 @@ export async function GET() {
     { status: 200 },
   );
 }
+
+export const GET = withApi('/api/waitlist/count', handleGET, false);

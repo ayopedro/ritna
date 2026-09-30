@@ -1,12 +1,12 @@
+import { withApi } from '@/app/lib/api/handler';
 import { db } from '@/app/lib/db';
 import { waitlist } from '@/app/lib/db/schema';
 import { waitlistSchema } from '@/app/lib/validators';
 import * as z from 'zod';
-import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
-  const body = await request.json();
+async function handlePOST(request: Request) {
+  const body = await request.json().catch(() => null);
 
   const {
     success,
@@ -27,24 +27,12 @@ export async function POST(request: Request) {
 
   const { email, firstName, lastName, category, phone } = validatedFields!;
 
-  const isExisting = await db
-    .select()
-    .from(waitlist)
-    .where(eq(waitlist.email, email))
-    .limit(1);
-
-  if (isExisting.length) {
-    return NextResponse.json(
-      {
-        success: false,
-        errors: { email: ['This email is already on the waitlist.'] },
-        message: 'You are already on the waitlist.',
-      },
-      { status: 409 },
-    );
+  const [created] = await db.insert(waitlist)
+    .values({ email, firstName, lastName, category, phone })
+    .onConflictDoNothing({ target: waitlist.email }).returning({ id: waitlist.id });
+  if (!created) {
+    return NextResponse.json({ success: false, message: 'You are already on the waitlist.' }, { status: 409 });
   }
-
-  await db.insert(waitlist).values({ email, firstName, lastName, category, phone });
 
   return NextResponse.json(
     {
@@ -55,3 +43,5 @@ export async function POST(request: Request) {
     { status: 201 },
   );
 }
+
+export const POST = withApi('/api/waitlist', handlePOST, false);

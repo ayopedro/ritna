@@ -1,3 +1,5 @@
+import { logError } from '@/app/lib/logger';
+import { withApi } from '@/app/lib/api/handler';
 import { and, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import * as z from 'zod';
@@ -6,11 +8,12 @@ import { orders } from '@/app/lib/db/schema';
 import { initiatePaymentSchema } from '@/app/lib/validators';
 import { createOrderPayment } from '@/app/lib/payments/create-order-payment';
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   let body: unknown;
   try {
     body = await request.json();
-  } catch {
+  } catch (error) {
+    logError('api.handled_error', error);
     return NextResponse.json(
       { success: false, message: 'Invalid JSON body.' },
       { status: 400 },
@@ -64,7 +67,8 @@ export async function POST(request: Request) {
       success: true,
       data: { orderId: order.id, paymentUrl },
     });
-  } catch {
+  } catch (error) {
+    logError('api.handled_error', error);
     return NextResponse.json(
       {
         success: false,
@@ -75,3 +79,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export const POST = withApi('/api/payments/initiate', handlePOST, false);

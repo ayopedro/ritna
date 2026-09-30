@@ -1,9 +1,11 @@
+import { logError } from '@/app/lib/logger';
+import { withApi } from '@/app/lib/api/handler';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { paymentReferenceSchema } from '@/app/lib/validators';
 import { verifyOrderPayment } from '@/app/lib/payments/verify-order-payment';
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const secret = process.env.PAYSTACK_SECRET_KEY;
   if (!secret) return new NextResponse(null, { status: 503 });
   const raw = await request.text();
@@ -16,7 +18,8 @@ export async function POST(request: Request) {
   let event;
   try {
     event = JSON.parse(raw);
-  } catch {
+  } catch (error) {
+    logError('api.handled_error', error);
     return new NextResponse(null, { status: 400 });
   }
   if (event.event !== 'charge.success')
@@ -30,7 +33,10 @@ export async function POST(request: Request) {
     if (result.providerStatus !== 'success' || result.confirmationEmailPending)
       return new NextResponse(null, { status: 503 });
     return NextResponse.json({ received: true });
-  } catch {
+  } catch (error) {
+    logError('api.handled_error', error);
     return new NextResponse(null, { status: 503 });
   }
 }
+
+export const POST = withApi('/api/payments/webhook', handlePOST, false);

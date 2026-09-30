@@ -1,3 +1,4 @@
+import { log } from '@/app/lib/logger';
 import { createHash } from 'node:crypto';
 import { eq, inArray, sql } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
@@ -19,7 +20,7 @@ export async function createPreorder(
     )
     .digest('hex');
 
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     await tx.execute(
       sql`select pg_advisory_xact_lock(hashtextextended(${idempotencyKey}, 0))`,
     );
@@ -121,4 +122,6 @@ export async function createPreorder(
       .values(lines.map((line) => ({ ...line, orderId: order.id })));
     return { order, status: 201 } as const;
   });
+  if (result.order) log('info', result.status === 201 ? 'order.created' : 'order.reused', { orderId: result.order.id });
+  return result;
 }

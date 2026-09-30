@@ -1,3 +1,4 @@
+import { log } from '@/app/lib/logger';
 import type {
   PaystackCheckoutInput,
   PaymentRecord,
@@ -46,6 +47,7 @@ export async function initializePaystack(input: PaystackCheckoutInput) {
   ) {
     throw new Error('Paystack initialization failed.');
   }
+  log('info', 'payment.initialized', { orderId: input.orderId, provider: 'paystack' });
   return parsed.data.data.authorization_url;
 }
 

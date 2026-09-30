@@ -1,9 +1,10 @@
+import { withApi } from '@/app/lib/api/handler';
 import { count, desc, eq } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
 import { customers, orders, reviews, waitlist } from '@/app/lib/db/schema';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+async function handleGET() {
   const [
     [orderCount],
     [waitlistCount],
@@ -50,5 +51,7 @@ export async function GET() {
     waitlistRows,
   }
 
-  return NextResponse.json({ data });
+  return NextResponse.json({ success: true, data });
 }
+
+export const GET = withApi('/api/admin/overview', handleGET, true);

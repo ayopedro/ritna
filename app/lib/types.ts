@@ -156,3 +156,14 @@ export interface ConfirmationEmailItem {
   quantity: number;
   unitPrice: number;
 }
+
+export interface LogContext { requestId: string; route: string; method: string; }
+export interface LogFields {
+  status?: number;
+  durationMs?: number;
+  orderId?: string;
+  paymentId?: string;
+  provider?: string;
+  errorType?: string;
+  errorCode?: string;
+}

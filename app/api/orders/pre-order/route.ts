@@ -1,10 +1,12 @@
+import { logError } from '@/app/lib/logger';
+import { withApi } from '@/app/lib/api/handler';
 import { createPreorder } from '@/app/lib/orders/create-preorder';
 import { createOrderPayment } from '@/app/lib/payments/create-order-payment';
 import { createPreorderSchema } from '@/app/lib/validators';
 import { NextResponse } from 'next/server';
 import * as z from 'zod';
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const key = z.uuid().safeParse(request.headers.get('Idempotency-Key'));
   if (!key.success) {
     return NextResponse.json(
@@ -16,7 +18,8 @@ export async function POST(request: Request) {
   let body: unknown;
   try {
     body = await request.json();
-  } catch {
+  } catch (error) {
+    logError('api.handled_error', error);
     return NextResponse.json(
       { success: false, message: 'Invalid JSON body.' },
       { status: 400 },
@@ -64,7 +67,8 @@ export async function POST(request: Request) {
     let paymentUrl: string;
     try {
       paymentUrl = await createOrderPayment(result.order);
-    } catch {
+    } catch (error) {
+    logError('api.handled_error', error);
       return NextResponse.json(
         {
           success: false,
@@ -89,7 +93,8 @@ export async function POST(request: Request) {
       },
       { status: result.status },
     );
-  } catch {
+  } catch (error) {
+    logError('api.handled_error', error);
     return NextResponse.json(
       {
         success: false,
@@ -100,3 +105,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export const POST = withApi('/api/orders/pre-order', handlePOST, false);
