@@ -57,6 +57,7 @@ export interface ShippingDetails {
 }
 
 export interface ShippingModalProps {
+  items: CartItem[];
   isOpen: boolean;
   onClose: () => void;
   totalAmount: number;

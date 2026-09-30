@@ -15,7 +15,6 @@ import en from 'react-phone-number-input/locale/en.json';
 import 'react-phone-number-input/style.css';
 import { Modal } from '../modal';
 import { useCreatePreorder } from '@/app/services/mutations/order';
-import { useCartStore } from '@/app/lib/stores/cart';
 
 const countryLabels: Record<string, string> = {};
 for (const [code, name] of Object.entries(en)) {
@@ -30,8 +29,8 @@ export function ShippingModal({
   isOpen,
   onClose,
   totalAmount,
+  items,
 }: ShippingModalProps) {
-  const items = useCartStore((state) => state.items);
 
   const { mutateAsync, isPending } = useCreatePreorder();
   const submitting = useRef(false);

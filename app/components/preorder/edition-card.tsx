@@ -4,7 +4,7 @@ import type { EditionCardProps } from "@/lib/types";
 
 import { Minus, Plus } from 'lucide-react';
 import { useCartStore } from '../../lib/stores/cart';
-import { BookEdition } from '@/lib/constants';
+import { AVAILABLE_BOOK_EDITIONS } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
 export function EditionCard({ book }: EditionCardProps) {
@@ -14,7 +14,7 @@ export function EditionCard({ book }: EditionCardProps) {
   const addItem = useCartStore((state) => state.addItem);
   const removeItem = useCartStore((state) => state.removeItem);
   
-  return book.type === BookEdition.INSTITUTIONAL ? (
+  return !AVAILABLE_BOOK_EDITIONS.includes(book.type) ? (
     <div className='border border-slate-200 rounded-2xl p-5 flex flex-col items-start justify-between gap-4 bg-white hover:border-slate-300 transition-colors shadow-xs sm:flex-row sm:items-center'>
       <div className='flex flex-col gap-1'>
         <div className='flex items-center gap-2'>

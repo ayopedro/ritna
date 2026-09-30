@@ -1,5 +1,7 @@
 'use client';
 
+import { AVAILABLE_BOOK_EDITIONS } from '@/app/lib/constants';
+
 import { useState } from 'react';
 import { useCartStore } from '../lib/stores/cart';
 import Link from 'next/link';
@@ -22,7 +24,7 @@ export function Preorder() {
   const booksById = new Map(books.map((book) => [book.id, book]));
   const selectedBooks = items.flatMap(({ id, quantity }) => {
     const book = booksById.get(id);
-    return book && quantity > 0 ? [{ book, quantity }] : [];
+    return book && AVAILABLE_BOOK_EDITIONS.includes(book.type) && quantity > 0 ? [{ book, quantity }] : [];
   });
   const { total, itemCount } = selectedBooks.reduce(
     (summary, { book, quantity }) => ({
@@ -91,6 +93,7 @@ export function Preorder() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         totalAmount={total}
+        items={selectedBooks.map(({ book, quantity }) => ({ id: book.id, quantity }))}
       />
     </section>
   );
