@@ -1,12 +1,8 @@
 'use client';
 
-import type { Book } from '../../lib/types';
-import { EditionCard } from './edition-card';
+import type { EditionListProps } from "@/lib/types";
 
-interface EditionListProps {
-  books: Book[];
-  isLoading: boolean;
-}
+import { EditionCard } from './edition-card';
 
 export function EditionList({ books, isLoading }: EditionListProps) {
   return (

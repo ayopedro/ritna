@@ -4,27 +4,25 @@ import { useState } from 'react';
 import { useCartStore } from '../lib/stores/cart';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import toast from 'react-hot-toast';
-import type { Book } from '../lib/types';
+import type { Book, ShippingDetails } from '../lib/types';
 import { useGetBooks } from '../services/queries/book';
-import ShippingModal, { ShippingDetails } from '../components/modals';
 import { BookCarousel } from '../components/preorder/book-carousel';
 import { EditionList } from '../components/preorder/edition-list';
 import { MobileCart } from '../components/preorder/mobile-cart';
 import { OrderSummary } from '../components/preorder/order-summary';
+import ShippingModal from '../components/modals/shipping-modal';
 
 export function Preorder() {
   const items = useCartStore((state) => state.items);
-  const clearCart = useCartStore((state) => state.clearCart);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const { data: books = [], isLoading } = useGetBooks<Book[]>();
 
-  const quantities = new Map(items.map(({ id, quantity }) => [id, quantity]));
-  const selectedBooks = books.flatMap((book) => {
-    const quantity = quantities.get(book.id) ?? 0;
-    return quantity > 0 ? [{ book, quantity }] : [];
+  const booksById = new Map(books.map((book) => [book.id, book]));
+  const selectedBooks = items.flatMap(({ id, quantity }) => {
+    const book = booksById.get(id);
+    return book && quantity > 0 ? [{ book, quantity }] : [];
   });
   const { total, itemCount } = selectedBooks.reduce(
     (summary, { book, quantity }) => ({
@@ -34,15 +32,9 @@ export function Preorder() {
     { total: 0, itemCount: 0 },
   );
 
-  function confirmShipping(details: ShippingDetails) {
-    toast.success(`Order confirmed for ${details.fullName}!`);
-    clearCart();
-    setIsShippingModalOpen(false);
-  }
-
   function openShipping() {
     setIsCartOpen(false);
-    setIsShippingModalOpen(true);
+    setModalOpen(true);
   }
 
   return (
@@ -96,9 +88,8 @@ export function Preorder() {
       </MobileCart>
 
       <ShippingModal
-        isOpen={isShippingModalOpen}
-        onClose={() => setIsShippingModalOpen(false)}
-        onConfirm={confirmShipping}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
         totalAmount={total}
       />
     </section>

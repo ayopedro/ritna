@@ -1,22 +1,11 @@
 'use client';
 
+import type { OrderSummaryProps } from '@/lib/types';
+
 import Image from 'next/image';
 import { useCartStore } from '../../lib/stores/cart';
 import { Minus, Plus } from 'lucide-react';
-import type { Book } from '../../lib/types';
 import { formatPrice } from '@/lib/utils';
-
-interface SelectedBook {
-  book: Book;
-  quantity: number;
-}
-
-interface OrderSummaryProps {
-  selectedBooks: SelectedBook[];
-  total: number;
-  onPayNow: () => void;
-  variant?: 'sidebar' | 'drawer';
-}
 
 export function OrderSummary({
   selectedBooks,

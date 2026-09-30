@@ -1,24 +1,8 @@
+import type { CartItem, CartState } from "@/lib/types";
 
 import { CART_STORAGE_KEY } from "@/lib/constants";
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-
-interface CartItem {
-  id: string;
-  quantity: number;
-}
-
-interface CartAction {
-  addItem: (item: CartItem) => void;
-  removeItem: (id: string) => void;
-  clearCart: () => void;
-}
-
-interface CartStore {
-  items: CartItem[];
-}
-
-export type CartState = CartStore & CartAction;
 
 export const useCartStore = create<CartState>()(
   devtools(

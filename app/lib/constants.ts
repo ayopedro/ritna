@@ -84,7 +84,7 @@ export const SHIPPING_DEFAULT_VALUES = {
   address: "",
   city: "",
   state: "Lagos",
-  deliveryNotes: "",
+  note: "",
 };
 
 export const MODAL_MAX_WIDTHS = {
@@ -112,6 +112,7 @@ export const API_ENDPOINTS = {
   adminOverview: '/api/admin/overview',
   waitlist: '/api/waitlist',
   waitlistCount: '/api/waitlist/count',
+  createPreorder: '/api/payments/initiate',
 } as const;
 
 export const QUERY_KEYS = {
@@ -120,7 +121,10 @@ export const QUERY_KEYS = {
   waitlistCount: ['getWaitlistCount'],
 } as const;
 
-export const MUTATION_KEYS = { joinWaitlist: ['join-waitlist'] } as const;
+export const MUTATION_KEYS = { 
+  joinWaitlist: ['join-waitlist'],
+  createPreorder: ['create-preorder'],
+ } as const;
 
 export const RANDOM_ID_CHARACTERS =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

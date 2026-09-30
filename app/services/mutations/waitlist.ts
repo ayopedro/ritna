@@ -1,6 +1,6 @@
 
 import { API_ENDPOINTS, MUTATION_KEYS } from "@/lib/constants";
-import { JoinWaitlistFormData } from "@/app/components/waitlist-form";
+import type { JoinWaitlistFormData } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query"
 
 export const useJoinWaitlistMutation = () =>

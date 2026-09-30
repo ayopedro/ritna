@@ -1,5 +1,7 @@
 "use client";
 
+import type { JoinWaitlistFormData } from "@/lib/types";
+
 import { WAITLIST_DEFAULT_VALUES } from "@/lib/constants";
 
 import { waitlistSchema } from "@/lib/validators";
@@ -10,14 +12,6 @@ import PhoneInput from "react-phone-number-input";
 import toast from "react-hot-toast";
 import { useJoinWaitlistMutation } from "../services/mutations/waitlist";
 import "react-phone-number-input/style.css";
-
-export type JoinWaitlistFormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  category: "civilian" | "military";
-};
 
 const WaitlistForm = () => {
 

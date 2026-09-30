@@ -1,17 +1,10 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import type { MobileCartProps } from "@/lib/types";
+
 import * as Dialog from '@radix-ui/react-dialog';
 import { ShoppingCart, X } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
-
-interface MobileCartProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  itemCount: number;
-  total: number;
-  children: ReactNode;
-}
 
 export function MobileCart({
   open,

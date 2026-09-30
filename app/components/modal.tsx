@@ -1,8 +1,9 @@
 "use client";
 
+import type { ModalProps } from "@/lib/types";
+
 import { MODAL_MAX_WIDTHS } from "@/lib/constants";
 
-import React from "react";
 import {
   Root,
   Portal,
@@ -14,16 +15,6 @@ import {
 } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-export interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-  maxWidth?: "sm" | "md" | "lg" | "xl";
-  className?: string;
-}
 
 export function Modal({
   isOpen,

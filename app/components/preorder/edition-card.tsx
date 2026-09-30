@@ -1,13 +1,11 @@
 'use client';
 
+import type { EditionCardProps } from "@/lib/types";
+
 import { Minus, Plus } from 'lucide-react';
 import { useCartStore } from '../../lib/stores/cart';
-import { BookEdition, type Book } from '../../lib/types';
+import { BookEdition } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
-
-interface EditionCardProps {
-  book: Book;
-}
 
 export function EditionCard({ book }: EditionCardProps) {
   const quantity = useCartStore(

@@ -1,17 +1,11 @@
 "use client";
 
+import type { TimeLeft } from "@/lib/types";
+
 import { BOOK_LAUNCH_DATE, COUNTDOWN_INTERVAL_MS } from "@/lib/constants";
 
 import { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
-
-interface TimeLeft {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  isExpired: boolean;
-}
 
 function getTimeRemaining(): TimeLeft {
   const total = new Date(BOOK_LAUNCH_DATE).getTime() - Date.now();
