@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useCartStore } from '../../lib/stores/cart';
 import { Minus, Plus } from 'lucide-react';
 import type { Book } from '../../lib/types';
 import { formatPrice } from './preorder.constants';
@@ -13,7 +14,6 @@ interface SelectedBook {
 interface OrderSummaryProps {
   selectedBooks: SelectedBook[];
   total: number;
-  onUpdateQuantity: (id: string, quantity: number) => void;
   onPayNow: () => void;
   variant?: 'sidebar' | 'drawer';
 }
@@ -21,10 +21,12 @@ interface OrderSummaryProps {
 export function OrderSummary({
   selectedBooks,
   total,
-  onUpdateQuantity,
   onPayNow,
   variant = 'sidebar',
 }: OrderSummaryProps) {
+  const addItem = useCartStore((state) => state.addItem);
+  const removeItem = useCartStore((state) => state.removeItem);
+
   return (
     <div
       className={
@@ -33,7 +35,9 @@ export function OrderSummary({
           : 'h-fit rounded-2xl border border-slate-200 bg-[#f8fafc] p-6 shadow-xs lg:sticky lg:top-8'
       }
     >
-      <h2 className='mb-5 text-lg font-semibold text-slate-950'>Order summary</h2>
+      <h2 className='mb-5 text-lg font-semibold text-slate-950'>
+        Order summary
+      </h2>
 
       <div className='mb-6 space-y-4 rounded-2xl border border-slate-100 bg-white p-4'>
         {selectedBooks.length === 0 ? (
@@ -42,7 +46,10 @@ export function OrderSummary({
           </p>
         ) : (
           selectedBooks.map(({ book, quantity }) => (
-            <div key={book.id} className='flex items-center justify-between gap-3'>
+            <div
+              key={book.id}
+              className='flex items-center justify-between gap-3'
+            >
               <div className='flex min-w-0 items-center gap-3'>
                 {book.image && (
                   <div className='relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100'>
@@ -63,7 +70,7 @@ export function OrderSummary({
                     <button
                       type='button'
                       aria-label={`Decrease ${book.title} quantity`}
-                      onClick={() => onUpdateQuantity(book.id, quantity - 1)}
+                      onClick={() => removeItem(book.id)}
                       className='cursor-pointer text-slate-500 hover:text-slate-900'
                     >
                       <Minus className='h-3 w-3' />
@@ -74,7 +81,7 @@ export function OrderSummary({
                     <button
                       type='button'
                       aria-label={`Increase ${book.title} quantity`}
-                      onClick={() => onUpdateQuantity(book.id, quantity + 1)}
+                      onClick={() => addItem({ id: book.id, quantity: 1 })}
                       className='cursor-pointer text-slate-500 hover:text-slate-900'
                     >
                       <Plus className='h-3 w-3' />

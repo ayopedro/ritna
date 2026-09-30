@@ -1,20 +1,21 @@
 'use client';
 
 import { Minus, Plus } from 'lucide-react';
+import { useCartStore } from '../../lib/stores/cart';
 import { BookEdition, type Book } from '../../lib/types';
 import { formatPrice } from './preorder.constants';
 
 interface EditionCardProps {
   book: Book;
-  quantity: number;
-  onUpdateQuantity: (quantity: number) => void;
 }
 
-export function EditionCard({
-  book,
-  quantity,
-  onUpdateQuantity,
-}: EditionCardProps) {
+export function EditionCard({ book }: EditionCardProps) {
+  const quantity = useCartStore(
+    (state) => state.items.find((item) => item.id === book.id)?.quantity ?? 0,
+  );
+  const addItem = useCartStore((state) => state.addItem);
+  const removeItem = useCartStore((state) => state.removeItem);
+  
   return book.type === BookEdition.INSTITUTIONAL ? (
     <div className='border border-slate-200 rounded-2xl p-5 flex flex-col items-start justify-between gap-4 bg-white hover:border-slate-300 transition-colors shadow-xs sm:flex-row sm:items-center'>
       <div className='flex flex-col gap-1'>
@@ -39,7 +40,7 @@ export function EditionCard({
             {book.title}
           </span>
           <span className='text-[11px] font-semibold text-blue-600 bg-blue-100/80 px-2 py-0.5 rounded-md'>
-            {formatPrice(book.price)}/COPY
+            {formatPrice(book.price)} / COPY
           </span>
         </div>
         <p className='text-xs text-slate-500 leading-snug'>
@@ -51,7 +52,7 @@ export function EditionCard({
         <button
           type='button'
           aria-label={`Decrease ${book.title} quantity`}
-          onClick={() => onUpdateQuantity(Math.max(0, quantity - 1))}
+          onClick={() => removeItem(book.id)}
           disabled={quantity === 0}
           className='text-slate-600 hover:text-slate-950 disabled:opacity-30 transition-opacity p-0.5 cursor-pointer disabled:cursor-not-allowed'
         >
@@ -63,7 +64,7 @@ export function EditionCard({
         <button
           type='button'
           aria-label={`Increase ${book.title} quantity`}
-          onClick={() => onUpdateQuantity(quantity + 1)}
+          onClick={() => addItem({ id: book.id, quantity: 1 })}
           className='text-slate-600 hover:text-slate-950 transition-colors p-0.5 cursor-pointer'
         >
           <Plus className='w-3.5 h-3.5' />

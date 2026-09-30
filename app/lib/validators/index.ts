@@ -15,9 +15,7 @@ export const CustomerInsertSchema = createInsertSchema(schema.customers, {
     error: (iss) =>
       !iss.input ? 'Email is required' : 'Invalid email address',
   }),
-  phone: z
-    .string()
-    .optional(),
+  phone: z.string().optional(),
 });
 export const CustomerUpdateSchema = createUpdateSchema(schema.customers);
 
@@ -51,4 +49,28 @@ export const waitlistSchema = z.object({
   category: z.enum(['civilian', 'military'], {
     error: 'Category is required',
   }),
+});
+
+export const orderSchema = z.object({
+  fullName: z.string('Full name is required'),
+  email: z.email({
+    error: (iss) =>
+      !iss.input ? 'Email is required' : 'Invalid email address',
+  }),
+  phone: z
+    .string()
+    .regex(/^(?:\+?[1-9]\d{0,2}[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?){1,2}\d{4}$/, {
+      error: 'Invalid phone number format',
+    })
+    .optional(),
+  deliveryAddress: z.string({
+    error: 'Delivery address is required',
+  }),
+  city: z.string({
+    error: 'City is required',
+  }),
+  state: z.string({
+    error: 'State is required',
+  }),
+  notes: z.string().optional(),
 });

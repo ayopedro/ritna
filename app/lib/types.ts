@@ -19,3 +19,11 @@ export interface BookSlide {
   src: string;
   alt: string;
 }
+
+export interface AdminStats {
+  orderCount: number;
+  waitlistCount: number;
+  reviewCount: number;
+  orderRows: any[];
+  waitlistRows: any[];
+}
