@@ -19,6 +19,7 @@ async function handleGET() {
       .select({
         id: orders.id,
         status: orders.status,
+        paymentStatus: orders.paymentStatus,
         createdAt: orders.createdAt,
         firstName: customers.firstName,
         lastName: customers.lastName,

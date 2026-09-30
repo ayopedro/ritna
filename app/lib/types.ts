@@ -20,8 +20,8 @@ export interface AdminStats {
   orderCount: number;
   waitlistCount: number;
   reviewCount: number;
-  orderRows: any[];
-  waitlistRows: any[];
+  orderRows: AdminOrderRow[];
+  waitlistRows: AdminWaitlistRow[];
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -158,7 +158,11 @@ export interface ConfirmationEmailItem {
   unitPrice: number;
 }
 
-export interface LogContext { requestId: string; route: string; method: string; }
+export interface LogContext {
+  requestId: string;
+  route: string;
+  method: string;
+}
 export interface LogFields {
   status?: number;
   durationMs?: number;
@@ -167,4 +171,47 @@ export interface LogFields {
   provider?: string;
   errorType?: string;
   errorCode?: string;
+}
+
+export interface AdminOrderRow {
+  id: string;
+  status: PreorderRecord['status'];
+  paymentStatus: PreorderRecord['paymentStatus'];
+  firstName: string;
+  lastName: string;
+  email: string;
+  createdAt: string | null;
+}
+
+export interface AdminWaitlistRow {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  email: string;
+  phone: string | null;
+  category: 'civilian' | 'military';
+  createdAt: string | null;
+}
+
+export interface AdminTableRecord {
+  id: string;
+  email: string;
+}
+
+export interface AdminDataTableProps<T extends AdminTableRecord> {
+  title: string;
+  data: T[];
+  columns: import('@tanstack/react-table').ColumnDef<T>[];
+  totalCount: number;
+}
+
+export interface SelectionCheckboxProps {
+  label: string;
+  checked: boolean;
+  mixed?: boolean;
+  onChange: (checked: boolean) => void;
+}
+
+export interface AdminTablesProps {
+  data: AdminStats;
 }

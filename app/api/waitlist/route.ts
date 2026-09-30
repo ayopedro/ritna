@@ -27,11 +27,16 @@ async function handlePOST(request: Request) {
 
   const { email, firstName, lastName, category, phone } = validatedFields!;
 
-  const [created] = await db.insert(waitlist)
+  const [created] = await db
+    .insert(waitlist)
     .values({ email, firstName, lastName, category, phone })
-    .onConflictDoNothing({ target: waitlist.email }).returning({ id: waitlist.id });
+    .onConflictDoNothing({ target: waitlist.email })
+    .returning({ id: waitlist.id });
   if (!created) {
-    return NextResponse.json({ success: false, message: 'You are already on the waitlist.' }, { status: 409 });
+    return NextResponse.json(
+      { success: false, message: 'You are already on the waitlist.' },
+      { status: 409 },
+    );
   }
 
   return NextResponse.json(

@@ -2,14 +2,11 @@
 
 import Link from 'next/link';
 import { useGetAdminStats } from '@/app/services/queries/admin';
-import { AdminStats } from '../lib/types';
-import moment from 'moment';
-
-const formatDate = (date: Date | null) =>
-  date ? moment(date).format('DD/MM/YYYY') : '—';
+import type { AdminStats } from '../lib/types';
+import { AdminTables } from '@/app/components/admin/tables';
 
 export default function AdminPage() {
-  const { data } = useGetAdminStats<AdminStats>();
+  const { data, isLoading, isError, refetch } = useGetAdminStats<AdminStats>();
 
   return (
     <main className='min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-10'>
@@ -33,6 +30,14 @@ export default function AdminPage() {
             View site
           </Link>
         </header>
+
+        {isLoading && <p role='status' className='mb-6 text-slate-500'>Loading dashboard...</p>}
+        {isError && (
+          <div role='alert' className='mb-6 rounded-xl bg-red-50 p-4 text-red-700'>
+            Unable to load the dashboard.
+            <button type='button' onClick={() => void refetch()} className='ml-3 underline'>Retry</button>
+          </div>
+        )}
 
         <section
           aria-label='Overview'
@@ -58,134 +63,7 @@ export default function AdminPage() {
           </div>
         </section>
 
-        <div className='space-y-6'>
-          <section className='overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs'>
-            <div className='border-b border-slate-100 px-5 py-4 sm:px-6'>
-              <h2 className='text-lg font-semibold'>Orders</h2>
-            </div>
-            <div className='overflow-x-auto'>
-              <table
-                aria-label='Orders'
-                className='w-full min-w-170 text-left text-sm'
-              >
-                <thead className='bg-slate-50 text-xs uppercase tracking-wide text-slate-500'>
-                  <tr>
-                    <th scope='col' className='px-5 py-3 font-medium sm:px-6'>
-                      Order
-                    </th>
-                    <th scope='col' className='px-5 py-3 font-medium'>
-                      Customer
-                    </th>
-                    <th scope='col' className='px-5 py-3 font-medium'>
-                      Email
-                    </th>
-                    <th scope='col' className='px-5 py-3 font-medium'>
-                      Status
-                    </th>
-                    <th scope='col' className='px-5 py-3 font-medium'>
-                      Placed
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className='divide-y divide-slate-100'>
-                  {data?.orderRows.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className='px-5 py-8 text-center text-slate-500'
-                      >
-                        No orders yet.
-                      </td>
-                    </tr>
-                  ) : (
-                    data?.orderRows.map((order) => (
-                      <tr key={order.id}>
-                        <td
-                          className='px-5 py-4 font-mono text-xs text-slate-600 sm:px-6'
-                          title={order.id}
-                        >
-                          #{order.id.slice(0, 8)}
-                        </td>
-                        <td className='px-5 py-4 font-medium'>
-                          {order.firstName} {order.lastName}
-                        </td>
-                        <td className='px-5 py-4'>{order.email}</td>
-                        <td className='px-5 py-4 capitalize'>
-                          {order.status ?? '—'}
-                        </td>
-                        <td className='whitespace-nowrap px-5 py-4 text-slate-500'>
-                          {formatDate(order.createdAt)}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section className='overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs'>
-            <div className='border-b border-slate-100 px-5 py-4 sm:px-6'>
-              <h2 className='text-lg font-semibold'>Waitlist</h2>
-            </div>
-            <div className='overflow-x-auto'>
-              <table
-                aria-label='Waitlist'
-                className='w-full min-w-185 text-left text-sm'
-              >
-                <thead className='bg-slate-50 text-xs uppercase tracking-wide text-slate-500'>
-                  <tr>
-                    <th scope='col' className='px-5 py-3 font-medium sm:px-6'>
-                      Name
-                    </th>
-                    <th scope='col' className='px-5 py-3 font-medium'>
-                      Email
-                    </th>
-                    <th scope='col' className='px-5 py-3 font-medium'>
-                      Phone
-                    </th>
-                    <th scope='col' className='px-5 py-3 font-medium'>
-                      Category
-                    </th>
-                    <th scope='col' className='px-5 py-3 font-medium'>
-                      Joined
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className='divide-y divide-slate-100'>
-                  {data?.waitlistRows.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className='px-5 py-8 text-center text-slate-500'
-                      >
-                        No one on the waitlist yet.
-                      </td>
-                    </tr>
-                  ) : (
-                    data?.waitlistRows.map((person) => (
-                      <tr key={person.id}>
-                        <td className='px-5 py-4 font-medium sm:px-6'>
-                          {person.firstName} {person.lastName ?? ''}
-                        </td>
-                        <td className='px-5 py-4'>{person.email}</td>
-                        <td className='whitespace-nowrap px-5 py-4'>
-                          {person.phone ?? '—'}
-                        </td>
-                        <td className='px-5 py-4 capitalize'>
-                          {person.category}
-                        </td>
-                        <td className='whitespace-nowrap px-5 py-4 text-slate-500'>
-                          {formatDate(person.createdAt)}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
+        {data && <AdminTables data={data} />}
       </div>
     </main>
   );

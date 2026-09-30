@@ -68,7 +68,7 @@ async function handlePOST(request: Request) {
     try {
       paymentUrl = await createOrderPayment(result.order);
     } catch (error) {
-    logError('api.handled_error', error);
+      logError('api.handled_error', error);
       return NextResponse.json(
         {
           success: false,
