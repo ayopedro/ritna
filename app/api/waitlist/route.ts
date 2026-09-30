@@ -1,6 +1,7 @@
 import { db } from '@/app/lib/db';
 import { waitlist } from '@/app/lib/db/schema';
 import { waitlistSchema } from '@/app/lib/validators';
+import * as z from 'zod';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: false,
-        errors: error.flatten().fieldErrors,
+        errors: z.treeifyError(error),
         message: 'Validation failed.',
       },
       { status: 400 },

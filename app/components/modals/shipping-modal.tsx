@@ -30,14 +30,12 @@ export function ShippingModal({
   totalAmount,
 }: ShippingModalProps) {
   const items = useCartStore((state) => state.items);
-  const clearCart = useCartStore((state) => state.clearCart);
 
   const { mutate, isPending } = useCreatePreorder();
   const {
     control,
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<ShippingDetails>({
     defaultValues: SHIPPING_DEFAULT_VALUES,
@@ -48,16 +46,13 @@ export function ShippingModal({
     mutate(
       {
         customer: data,
-        order: items,
-        total: totalAmount,
+        items,
+        totalAmount,
       },
       {
         onSuccess: (res) => {
           toast.success('Redirecting to payment provider');
-          console.log('Preorder created successfully:', res);
-          reset();
-          clearCart();
-          onClose();
+          window.location.assign(res.data.paymentUrl);
         },
         onError: () => {
           toast.error(

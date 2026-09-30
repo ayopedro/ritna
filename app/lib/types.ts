@@ -1,6 +1,6 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
-import type { BookEdition } from "./constants";
-export { BookEdition } from "./constants";
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { BookEdition } from './constants';
+export { BookEdition } from './constants';
 
 export interface Book {
   id: string;
@@ -42,7 +42,7 @@ export interface ModalProps {
   title: string;
   description?: string;
   children: ReactNode;
-  maxWidth?: "sm" | "md" | "lg" | "xl";
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 }
 
@@ -96,13 +96,13 @@ export type JoinWaitlistFormData = {
   lastName: string;
   email: string;
   phone: string;
-  category: "civilian" | "military";
+  category: 'civilian' | 'military';
 };
 
 export type CreatePreorderFormData = {
-  order: CartItem[];
+  items: CartItem[];
   customer: ShippingDetails;
-  total: number;
+  totalAmount: number;
 };
 
 export interface CartItem {
@@ -121,3 +121,24 @@ export interface CartStore {
 }
 
 export type CartState = CartStore & CartAction;
+
+export interface PaystackCheckoutInput {
+  email: string;
+  amount: number;
+  reference: string;
+  orderId: string;
+}
+
+export type ValidatedPreorder = import('zod').infer<
+  typeof import('./validators').createPreorderSchema
+>;
+export type PreorderRecord = typeof import('./db/schema').orders.$inferSelect;
+
+export type PaymentRecord = typeof import('./db/schema').payments.$inferSelect;
+export type VerifiedPaystackPayment = import('zod').infer<
+  typeof import('./validators').paystackVerifyResponseSchema
+>['data'];
+
+export interface PaymentResultPageProps {
+  searchParams: Promise<{ reference?: string }>;
+}

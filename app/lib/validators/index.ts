@@ -51,26 +51,69 @@ export const waitlistSchema = z.object({
   }),
 });
 
-export const orderSchema = z.object({
-  fullName: z.string('Full name is required'),
-  email: z.email({
-    error: (iss) =>
-      !iss.input ? 'Email is required' : 'Invalid email address',
+export const createPreorderSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        id: z.uuid(),
+        quantity: z.number().int().positive().max(2147483647),
+      }),
+    )
+    .min(1)
+    .max(100)
+    .refine(
+      (items) => new Set(items.map((item) => item.id)).size === items.length,
+      { message: 'Each book must appear only once.' },
+    ),
+  totalAmount: z.number().nonnegative().optional(),
+  customer: z.object({
+    fullName: z.string().trim().min(1).max(255),
+    email: z.email().max(255).toLowerCase(),
+    phone: z.string().trim().min(1).max(20).optional(),
+    address: z.string().trim().min(1).max(255),
+    city: z.string().trim().min(1).max(255),
+    state: z.string().trim().min(1).max(255),
+    deliveryNotes: z.string().trim().max(2000).optional(),
   }),
-  phone: z
-    .string()
-    .regex(/^(?:\+?[1-9]\d{0,2}[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?){1,2}\d{4}$/, {
-      error: 'Invalid phone number format',
-    })
-    .optional(),
-  deliveryAddress: z.string({
-    error: 'Delivery address is required',
+});
+
+export const initiatePaymentSchema = z.object({ orderId: z.uuid() });
+export const paymentReferenceSchema = z
+  .string()
+  .min(1)
+  .max(255)
+  .regex(/^[a-zA-Z0-9.=-]+$/);
+
+export const paystackVerifyResponseSchema = z.object({
+  status: z.literal(true),
+  data: z.object({
+    reference: z.string(),
+    status: z.enum([
+      'success',
+      'failed',
+      'abandoned',
+      'ongoing',
+      'pending',
+      'processing',
+      'queued',
+      'reversed',
+    ]),
+    amount: z.number().int().nonnegative(),
+    currency: z.string(),
+    customer: z.object({ email: z.email() }),
+    paid_at: z.string().datetime({ offset: true }).nullable().optional(),
   }),
-  city: z.string({
-    error: 'City is required',
+});
+
+export const paystackInitializeResponseSchema = z.object({
+  status: z.literal(true),
+  data: z.object({
+    reference: z.string(),
+    authorization_url: z.url().refine((value) => {
+      const url = new URL(value);
+      return (
+        url.protocol === 'https:' && url.hostname === 'checkout.paystack.com'
+      );
+    }),
   }),
-  state: z.string({
-    error: 'State is required',
-  }),
-  notes: z.string().optional(),
 });
