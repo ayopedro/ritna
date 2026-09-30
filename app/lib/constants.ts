@@ -140,3 +140,6 @@ export const PAYSTACK_INITIALIZE_URL =
 export const CHECKOUT_ATTEMPT_STORAGE_KEY = 'ritna-checkout-attempt';
 
 export const PAYSTACK_VERIFY_URL = 'https://api.paystack.co/transaction/verify';
+
+export const RESEND_EMAIL_URL = 'https://api.resend.com/emails';
+export const EMAIL_RETRY_WINDOW_MS = 23 * 60 * 60 * 1000;

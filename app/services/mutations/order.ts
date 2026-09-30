@@ -1,3 +1,4 @@
+import { preorderCheckoutResponseSchema } from '@/app/lib/validators';
 import {
   API_ENDPOINTS,
   MUTATION_KEYS,
@@ -45,7 +46,7 @@ export const useCreatePreorder = () => {
       if (!response.ok || !result.success) {
         throw new Error(result.message || 'Failed to create preorder');
       }
-      return result;
+      return preorderCheckoutResponseSchema.parse(result);
     },
   });
 };

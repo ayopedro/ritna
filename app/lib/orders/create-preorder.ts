@@ -113,7 +113,7 @@ export async function createPreorder(
         shippingAddressLine1: customer.address,
         shippingCity: customer.city,
         shippingState: customer.state,
-        shippingNotes: customer.deliveryNotes,
+        shippingNotes: customer.note,
       })
       .returning();
     await tx

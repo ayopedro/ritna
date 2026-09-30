@@ -17,7 +17,7 @@ const input = {
     address: '1 Main Street',
     city: 'Lagos',
     state: 'Lagos',
-    deliveryNotes: 'Call on arrival',
+    note: 'Call on arrival',
   },
 };
 
@@ -37,7 +37,7 @@ test('rejects empty, duplicate, malformed and nonpositive cart items', () => {
 });
 
 test('accepts checkout without a client total and preserves delivery notes', () => {
-  expect(createPreorderSchema.parse(input).customer.deliveryNotes).toBe(
+  expect(createPreorderSchema.parse(input).customer.note).toBe(
     'Call on arrival',
   );
   expect(
@@ -171,4 +171,23 @@ test('payment retry accepts an order id without trusting a client amount', async
     customerEmail: 'attacker@example.com',
   });
   expect(data).toEqual({ orderId: input.items[0].id });
+});
+
+test('checkout only accepts a valid Paystack redirect', async () => {
+  const { preorderCheckoutResponseSchema } =
+    await import('../../app/lib/validators');
+  const response = {
+    success: true,
+    data: {
+      orderId: input.items[0].id,
+      paymentUrl: 'https://checkout.paystack.com/test',
+    },
+  };
+  expect(preorderCheckoutResponseSchema.safeParse(response).success).toBe(true);
+  expect(
+    preorderCheckoutResponseSchema.safeParse({
+      ...response,
+      data: { ...response.data, paymentUrl: 'https://example.com' },
+    }).success,
+  ).toBe(false);
 });

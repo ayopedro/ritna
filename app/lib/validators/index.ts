@@ -73,7 +73,7 @@ export const createPreorderSchema = z.object({
     address: z.string().trim().min(1).max(255),
     city: z.string().trim().min(1).max(255),
     state: z.string().trim().min(1).max(255),
-    deliveryNotes: z.string().trim().max(2000).optional(),
+    note: z.string().trim().max(2000).optional(),
   }),
 });
 
@@ -110,6 +110,19 @@ export const paystackInitializeResponseSchema = z.object({
   data: z.object({
     reference: z.string(),
     authorization_url: z.url().refine((value) => {
+      const url = new URL(value);
+      return (
+        url.protocol === 'https:' && url.hostname === 'checkout.paystack.com'
+      );
+    }),
+  }),
+});
+
+export const preorderCheckoutResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({
+    orderId: z.uuid(),
+    paymentUrl: z.url().refine((value) => {
       const url = new URL(value);
       return (
         url.protocol === 'https:' && url.hostname === 'checkout.paystack.com'

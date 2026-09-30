@@ -1,5 +1,7 @@
+import type { ConfirmationEmailPayload } from '@/app/lib/types';
 import { relations, sql } from 'drizzle-orm';
 import {
+  jsonb,
   check,
   index,
   unique,
@@ -268,3 +270,15 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
     references: [orders.id],
   }),
 }));
+
+export const orderConfirmationEmails = pgTable('order_confirmation_emails', {
+  orderId: uuid('order_id')
+    .primaryKey()
+    .references(() => orders.id),
+  payload: jsonb('payload').$type<ConfirmationEmailPayload>().notNull(),
+  providerId: varchar('provider_id', { length: 255 }),
+  sentAt: timestamp('sent_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});

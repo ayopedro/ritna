@@ -1,3 +1,4 @@
+import { sendOrderConfirmation } from '@/app/lib/email/send-order-confirmation';
 import { and, eq, ne } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
 import { orders, payments } from '@/app/lib/db/schema';
@@ -19,6 +20,7 @@ export async function verifyOrderPayment(reference: string) {
   const verified = await verifyPaystack(reference);
   if (!verified) return { ...record, providerStatus: 'not_found' as const };
   validatePaymentMatch(record.payment, record.order, verified);
+  let confirmationEmailPending = false;
   if (verified.status === 'success') {
     await db.transaction(async (tx) => {
       await tx
@@ -44,6 +46,14 @@ export async function verifyOrderPayment(reference: string) {
           ),
         );
     });
+    try {
+      await sendOrderConfirmation(record.order.id);
+    } catch {
+      confirmationEmailPending = true;
+      console.error('Order confirmation email pending', {
+        orderId: record.order.id,
+      });
+    }
   }
   if (verified.status === 'failed') {
     await db
@@ -56,5 +66,9 @@ export async function verifyOrderPayment(reference: string) {
         ),
       );
   }
-  return { ...record, providerStatus: verified.status };
+  return {
+    ...record,
+    providerStatus: verified.status,
+    confirmationEmailPending,
+  };
 }

@@ -142,3 +142,17 @@ export type VerifiedPaystackPayment = import('zod').infer<
 export interface PaymentResultPageProps {
   searchParams: Promise<{ reference?: string }>;
 }
+
+export interface ConfirmationEmailPayload {
+  from: string;
+  to: string[];
+  reply_to: string;
+  subject: string;
+  text: string;
+}
+
+export interface ConfirmationEmailItem {
+  title: string;
+  quantity: number;
+  unitPrice: number;
+}

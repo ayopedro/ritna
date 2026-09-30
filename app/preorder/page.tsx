@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useCartStore } from '../lib/stores/cart';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import type { Book, ShippingDetails } from '../lib/types';
+import type { Book } from '../lib/types';
 import { useGetBooks } from '../services/queries/book';
 import { BookCarousel } from '../components/preorder/book-carousel';
 import { EditionList } from '../components/preorder/edition-list';

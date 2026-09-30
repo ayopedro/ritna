@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   try {
     const result = await verifyOrderPayment(reference.data);
-    if (result.providerStatus !== 'success')
+    if (result.providerStatus !== 'success' || result.confirmationEmailPending)
       return new NextResponse(null, { status: 503 });
     return NextResponse.json({ received: true });
   } catch {
