@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useCartStore } from '../../lib/stores/cart';
 import { Minus, Plus } from 'lucide-react';
 import type { Book } from '../../lib/types';
-import { formatPrice } from './preorder.constants';
+import { formatPrice } from '@/lib/utils';
 
 interface SelectedBook {
   book: Book;

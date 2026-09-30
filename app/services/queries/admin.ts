@@ -1,10 +1,12 @@
+
+import { API_ENDPOINTS, QUERY_KEYS } from "@/lib/constants";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetAdminStats = <T>() => {
   return useQuery({
-    queryKey: ['getAdminStats'],
+    queryKey: QUERY_KEYS.adminStats,
     queryFn: async () => {
-      const res = await fetch('/api/admin/overview', {
+      const res = await fetch(API_ENDPOINTS.adminOverview, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

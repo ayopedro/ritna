@@ -1,8 +1,5 @@
-export enum BookEdition {
-  HARDCOVER = 'hardcover',
-  SOFTCOVER = 'softcover',
-  INSTITUTIONAL = 'institutional',
-}
+import { BookEdition } from "./constants";
+export { BookEdition } from "./constants";
 
 export interface Book {
   id: string;

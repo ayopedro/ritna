@@ -1,10 +1,12 @@
+
+import { API_ENDPOINTS, QUERY_KEYS } from "@/lib/constants";
 import { useQuery } from '@tanstack/react-query';
 
 export const useGetWaitlistCount = () => {
   return useQuery({
-    queryKey: ['getWaitlistCount'],
+    queryKey: QUERY_KEYS.waitlistCount,
     queryFn: async () => {
-      const res = await fetch('/api/waitlist/count', {
+      const res = await fetch(API_ENDPOINTS.waitlistCount, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

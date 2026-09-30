@@ -1,10 +1,12 @@
+
+import { API_ENDPOINTS, QUERY_KEYS } from "@/lib/constants";
 import { useQuery } from '@tanstack/react-query';
 
 export const useGetBooks = <T = any>() => {
   return useQuery({
-    queryKey: ['getBooks'],
+    queryKey: QUERY_KEYS.books,
     queryFn: async () => {
-      const res = await fetch('/api/books', {
+      const res = await fetch(API_ENDPOINTS.books, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

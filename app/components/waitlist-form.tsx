@@ -1,5 +1,7 @@
 "use client";
 
+import { WAITLIST_DEFAULT_VALUES } from "@/lib/constants";
+
 import { waitlistSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
@@ -18,13 +20,7 @@ export type JoinWaitlistFormData = {
 };
 
 const WaitlistForm = () => {
-  const initialFormData: JoinWaitlistFormData = {
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    category: "civilian",
-  };
+
   const {
     register,
     handleSubmit,
@@ -33,7 +29,7 @@ const WaitlistForm = () => {
     reset,
   } = useForm<JoinWaitlistFormData>({
     resolver: zodResolver(waitlistSchema),
-    defaultValues: initialFormData,
+    defaultValues: WAITLIST_DEFAULT_VALUES,
   });
 
   const { mutate, isPending } = useJoinWaitlistMutation();

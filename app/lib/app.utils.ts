@@ -1,21 +1,16 @@
+
+import { DATE_FORMAT_OPTIONS, RANDOM_ID_CHARACTERS } from "@/lib/constants";
 import * as z from 'zod';
 
 export default class AppUtils {
   static formatDate(date: Date): string {
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    };
-    return date.toLocaleDateString(undefined, options);
+    return date.toLocaleDateString(undefined, DATE_FORMAT_OPTIONS);
   }
 
   static generateRandomId(length: number = 8): string {
-    const chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
+      result += RANDOM_ID_CHARACTERS.charAt(Math.floor(Math.random() * RANDOM_ID_CHARACTERS.length));
     }
     return result;
   }

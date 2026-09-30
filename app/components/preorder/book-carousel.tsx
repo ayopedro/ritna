@@ -2,7 +2,7 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { BOOK_IMAGES } from "./preorder.constants";
+import { BOOK_IMAGES, CAROUSEL_INTERVAL_MS } from "@/lib/constants";
 
 export const BookCarousel = memo(function BookCarousel() {
   const [activeSlide, setActiveSlide] = useState<number>(0);
@@ -19,7 +19,7 @@ export const BookCarousel = memo(function BookCarousel() {
     const timer = setInterval(() => {
       if (isHovered.current || !isVisible.current || document.hidden) return;
       setActiveSlide((prev) => (prev + 1) % BOOK_IMAGES.length);
-    }, 3000);
+    }, CAROUSEL_INTERVAL_MS);
 
     return () => {
       clearInterval(timer);

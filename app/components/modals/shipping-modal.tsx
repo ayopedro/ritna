@@ -1,5 +1,7 @@
 "use client";
 
+import { NIGERIAN_STATES, SHIPPING_DEFAULT_VALUES } from "@/lib/constants";
+
 import { useForm, Controller } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -20,46 +22,6 @@ export interface ShippingDetails {
   state: string;
   deliveryNotes?: string;
 }
-
-export const NIGERIAN_STATES = [
-  "Abia",
-  "Adamawa",
-  "Akwa Ibom",
-  "Anambra",
-  "Bauchi",
-  "Bayelsa",
-  "Benue",
-  "Borno",
-  "Cross River",
-  "Delta",
-  "Ebonyi",
-  "Edo",
-  "Ekiti",
-  "Enugu",
-  "FCT - Abuja",
-  "Gombe",
-  "Imo",
-  "Jigawa",
-  "Kaduna",
-  "Kano",
-  "Katsina",
-  "Kebbi",
-  "Kogi",
-  "Kwara",
-  "Lagos",
-  "Nasarawa",
-  "Niger",
-  "Ogun",
-  "Ondo",
-  "Osun",
-  "Oyo",
-  "Plateau",
-  "Rivers",
-  "Sokoto",
-  "Taraba",
-  "Yobe",
-  "Zamfara",
-] as const;
 
 const countryLabels: Record<string, string> = {};
 for (const [code, name] of Object.entries(en)) {
@@ -90,15 +52,7 @@ export function ShippingModal({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<ShippingDetails>({
-    defaultValues: {
-      fullName: "",
-      email: "",
-      phone: "",
-      address: "",
-      city: "",
-      state: "Lagos",
-      deliveryNotes: "",
-    },
+    defaultValues: SHIPPING_DEFAULT_VALUES,
     mode: "onTouched",
   });
 
@@ -350,7 +304,7 @@ export function ShippingModal({
             id="deliveryNotes"
             rows={2}
             {...register("deliveryNotes")}
-            className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 border border-gray-200 rounded-xl text-base sm:text-sm text-slate-900 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white resize-y min-h-[64px] sm:min-h-[80px]"
+            className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 border border-gray-200 rounded-xl text-base sm:text-sm text-slate-900 focus:outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-colors bg-white resize-y min-h-16 sm:min-h-20"
           />
         </div>
 

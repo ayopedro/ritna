@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ShoppingCart, X } from 'lucide-react';
-import { formatPrice } from './preorder.constants';
+import { formatPrice } from '@/lib/utils';
 
 interface MobileCartProps {
   open: boolean;

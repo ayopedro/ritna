@@ -1,5 +1,7 @@
 "use client";
 
+import { MODAL_MAX_WIDTHS } from "@/lib/constants";
+
 import React from "react";
 import {
   Root,
@@ -22,13 +24,6 @@ export interface ModalProps {
   maxWidth?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }
-
-const MAX_WIDTHS = {
-  sm: "max-w-[400px]",
-  md: "max-w-[480px]",
-  lg: "max-w-[640px]",
-  xl: "max-w-[800px]",
-};
 
 export function Modal({
   isOpen,
@@ -54,7 +49,7 @@ export function Modal({
         <Content
           className={cn(
             "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-1.75rem)] sm:w-full bg-white rounded-[22px] sm:rounded-[26px] p-5 sm:p-8 shadow-2xl transition-all duration-200 max-h-[90vh] sm:max-h-[92vh] overflow-y-auto focus:outline-none",
-            MAX_WIDTHS[maxWidth],
+            MODAL_MAX_WIDTHS[maxWidth],
             className,
           )}
         >

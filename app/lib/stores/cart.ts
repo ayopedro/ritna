@@ -1,3 +1,5 @@
+
+import { CART_STORAGE_KEY } from "@/lib/constants";
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
@@ -58,7 +60,7 @@ export const useCartStore = create<CartState>()(
             return { items };
           }),
       }),
-      { name: 'ritna-cart' },
+      { name: CART_STORAGE_KEY },
     ),
   ),
 );
