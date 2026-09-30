@@ -41,6 +41,7 @@ export function ShippingModal({
     control,
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ShippingDetails>({
     defaultValues: SHIPPING_DEFAULT_VALUES,
@@ -77,7 +78,10 @@ export function ShippingModal({
     <Modal
       isOpen={isOpen}
       onClose={() => {
-        if (!busy) onClose();
+        if (!busy) {
+          reset(SHIPPING_DEFAULT_VALUES);
+          onClose();
+        }
       }}
       title='Your shipping details'
     >
