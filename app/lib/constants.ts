@@ -112,6 +112,7 @@ export const WAITLIST_DEFAULT_VALUES = {
 export const API_ENDPOINTS = {
   books: '/api/books',
   adminOverview: '/api/admin/overview',
+  adminRecords: '/api/admin/records',
   waitlist: '/api/waitlist',
   waitlistCount: '/api/waitlist/count',
   createPreorder: '/api/orders/pre-order',

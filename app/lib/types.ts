@@ -20,8 +20,6 @@ export interface AdminStats {
   orderCount: number;
   waitlistCount: number;
   reviewCount: number;
-  orderRows: AdminOrderRow[];
-  waitlistRows: AdminWaitlistRow[];
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -200,9 +198,8 @@ export interface AdminTableRecord {
 
 export interface AdminDataTableProps<T extends AdminTableRecord> {
   title: string;
-  data: T[];
+  kind: 'orders' | 'waitlist';
   columns: import('@tanstack/react-table').ColumnDef<T>[];
-  totalCount: number;
 }
 
 export interface SelectionCheckboxProps {
@@ -212,6 +209,7 @@ export interface SelectionCheckboxProps {
   onChange: (checked: boolean) => void;
 }
 
-export interface AdminTablesProps {
-  data: AdminStats;
-}
+
+export type AdminRecordsQuery = import('zod').infer<typeof import('./validators').adminRecordsQuerySchema>;
+export interface AdminRecordsPage<T> { rows: T[]; totalCount: number; page: number; pageSize: number; }
+export type AdminBulkSelection = { mode: 'explicit'; records: Record<string, string> } | { mode: 'all'; search: string; totalCount: number; excluded: Record<string, true> };

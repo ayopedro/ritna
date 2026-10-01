@@ -1,16 +1,15 @@
 'use client';
 
+import { useAdminRecords } from '@/app/services/queries/admin';
 import { useEffect, useRef, useState } from 'react';
 import {
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import type { RowSelectionState, SortingState } from '@tanstack/react-table';
+import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type {
+  AdminBulkSelection,
   AdminDataTableProps,
   AdminTableRecord,
   SelectionCheckboxProps,
@@ -40,40 +39,54 @@ function SelectionCheckbox({
 
 export function AdminDataTable<T extends AdminTableRecord>({
   title,
-  data,
+  kind,
   columns,
-  totalCount,
 }: AdminDataTableProps<T>) {
   const [search, setSearch] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+  const [selection, setSelection] = useState<AdminBulkSelection>({ mode: 'explicit', records: {} });
+  const query = useAdminRecords<T>({ kind, search, page: pagination.pageIndex, pageSize: pagination.pageSize as 10 | 25 | 50, sort: sorting[0]?.id ?? 'createdAt', direction: sorting[0] ? (sorting[0].desc ? 'desc' : 'asc') : 'desc' });
+  const data = query.data?.rows ?? [];
+  const matches = query.data?.totalCount ?? (selection.mode === 'all' ? selection.totalCount : 0);
+  const busy = query.isFetching;
+  useEffect(() => {
+    if (query.data && query.data.page !== pagination.pageIndex) setPagination((current) => ({ ...current, pageIndex: query.data.page }));
+  }, [query.data, pagination.pageIndex]);
+  const isSelected = (id: string) => selection.mode === 'all' ? !selection.excluded[id] : id in selection.records;
+  const toggleRows = (records: T[], checked: boolean) => setSelection((current) => {
+    if (current.mode === 'all') {
+      const excluded = { ...current.excluded };
+      for (const row of records) { if (checked) delete excluded[row.id]; else excluded[row.id] = true; }
+      return { ...current, excluded };
+    }
+    const selected = { ...current.records };
+    for (const row of records) { if (checked) selected[row.id] = row.email; else delete selected[row.id]; }
+    return { mode: 'explicit', records: selected };
+  });
+  const clearSelection = () => setSelection({ mode: 'explicit', records: {} });
   const table = useReactTable({
-    data,
-    columns,
-    state: { globalFilter: search, sorting, rowSelection },
-    onGlobalFilterChange: setSearch,
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
+    data, columns,
+    state: { sorting, pagination },
+    onSortingChange: (updater) => { setSorting(updater); setPagination((current) => ({ ...current, pageIndex: 0 })); },
+    onPaginationChange: setPagination,
     getRowId: (row) => row.id,
-    enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 10 } },
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
+    enableMultiSort: false,
+    rowCount: matches,
   });
   const rows = table.getRowModel().rows;
-  const matches = table.getFilteredRowModel().rows.length;
-  const selected = table.getFilteredSelectedRowModel().rows;
-  const recipients = [
-    ...new Set(selected.map((row) => row.original.email.trim().toLowerCase())),
-  ];
+  const selectedCount = selection.mode === 'all' ? Math.max(0, matches - Object.keys(selection.excluded).length) : Object.keys(selection.records).length;
+  const recipients = selection.mode === 'explicit' ? [...new Set(Object.values(selection.records).map((email) => email.trim().toLowerCase()))] : [];
   const selectedOnPage = () => (
     <SelectionCheckbox
       label={`Select all ${title.toLowerCase()} on this page`}
-      checked={rows.length > 0 && table.getIsAllPageRowsSelected()}
-      mixed={table.getIsSomePageRowsSelected()}
-      onChange={(checked) => table.toggleAllPageRowsSelected(checked)}
+      checked={data.length > 0 && data.every((row) => isSelected(row.id))}
+      mixed={data.some((row) => isSelected(row.id)) && !data.every((row) => isSelected(row.id))}
+      onChange={(checked) => { if (!busy) toggleRows(data, checked); }}
     />
   );
   return (
@@ -84,20 +97,17 @@ export function AdminDataTable<T extends AdminTableRecord>({
       <div className='space-y-4 border-b border-slate-100 p-4 sm:p-6'>
         <div>
           <h2 className='text-lg font-semibold'>{title}</h2>
-          <p className='text-sm text-slate-500'>
-            Showing {data.length} of {totalCount} records. Search and selection
-            cover the latest 100 loaded records.
-          </p>
         </div>
         <div className='flex flex-col gap-3 sm:flex-row'>
           <input
             type='search'
             aria-label={`Search ${title.toLowerCase()}`}
             placeholder='Search name, email, status…'
+            maxLength={200}
             value={search}
             onChange={(event) => {
               setSearch(event.target.value);
-              setRowSelection({});
+              clearSelection();
               table.setPageIndex(0);
             }}
             className='min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm'
@@ -105,13 +115,14 @@ export function AdminDataTable<T extends AdminTableRecord>({
           <select
             aria-label={`Sort ${title.toLowerCase()}`}
             value={sorting[0]?.id ?? ''}
-            onChange={(event) =>
+            onChange={(event) => {
+              table.setPageIndex(0);
               setSorting(
                 event.target.value
                   ? [{ id: event.target.value, desc: false }]
                   : [],
-              )
-            }
+              );
+            }}
             className='rounded-lg border border-slate-300 px-3 py-2 text-sm'
           >
             <option value=''>Default order</option>
@@ -137,24 +148,23 @@ export function AdminDataTable<T extends AdminTableRecord>({
             {sorting[0]?.desc ? 'Descending ↓' : 'Ascending ↑'}
           </button>
         </div>
-        {selected.length > 0 && (
+        {selectedCount > 0 && (
           <div className='flex flex-wrap items-center gap-3 text-sm'>
             <span role='status'>
-              {selected.length} selected · {recipients.length} unique email
-              addresses
+              {selection.mode === 'all' ? `${selectedCount} matching rows selected across all pages` : `${selectedCount} selected · ${recipients.length} unique email addresses`}
             </span>
             <button
               type='button'
-              disabled={!matches}
-              onClick={() => table.toggleAllRowsSelected(true)}
+              disabled={!matches || busy}
+              onClick={() => setSelection({ mode: 'all', search, totalCount: matches, excluded: {} })}
               className='underline disabled:opacity-40'
             >
               Select all {matches} matching rows
             </button>
             <button
               type='button'
-              disabled={!selected.length}
-              onClick={() => setRowSelection({})}
+              disabled={!selectedCount}
+              onClick={clearSelection}
               className='underline disabled:opacity-40'
             >
               Clear selection
@@ -176,6 +186,8 @@ export function AdminDataTable<T extends AdminTableRecord>({
           </details>
         )}
       </div>
+      {query.isLoading && <p role='status' className='p-4 text-sm'>Loading records…</p>}
+      {query.isError && <div role='alert' className='p-4 text-sm text-red-700'>Unable to load records. <button type='button' onClick={() => void query.refetch()} className='underline'>Retry</button></div>}
       <div className='hidden overflow-x-auto md:block'>
         <table aria-label={title} className='w-full text-left text-sm'>
           <thead className='bg-slate-50 text-slate-600'>
@@ -221,13 +233,13 @@ export function AdminDataTable<T extends AdminTableRecord>({
             {rows.map((row) => (
               <tr
                 key={row.id}
-                className={row.getIsSelected() ? 'bg-blue-50' : ''}
+                className={isSelected(row.id) ? 'bg-blue-50' : ''}
               >
                 <td className='p-4'>
                   <SelectionCheckbox
                     label={`Select ${row.original.email} (${row.id})`}
-                    checked={row.getIsSelected()}
-                    onChange={(checked) => row.toggleSelected(checked)}
+                    checked={isSelected(row.id)}
+                    onChange={(checked) => { if (!busy) toggleRows([row.original], checked); }}
                   />
                 </td>
                 {row.getVisibleCells().map((cell) => (
@@ -248,13 +260,13 @@ export function AdminDataTable<T extends AdminTableRecord>({
           {rows.map((row) => (
             <li
               key={row.id}
-              className={`p-4 ${row.getIsSelected() ? 'bg-blue-50' : ''}`}
+              className={`p-4 ${isSelected(row.id) ? 'bg-blue-50' : ''}`}
             >
               <label className='mb-3 flex items-center gap-3 text-sm font-medium'>
                 <SelectionCheckbox
                   label={`Select ${row.original.email} (${row.id})`}
-                  checked={row.getIsSelected()}
-                  onChange={(checked) => row.toggleSelected(checked)}
+                  checked={isSelected(row.id)}
+                  onChange={(checked) => { if (!busy) toggleRows([row.original], checked); }}
                 />
                 <span className='min-w-0 break-all'>{row.original.email}</span>
               </label>
@@ -280,7 +292,7 @@ export function AdminDataTable<T extends AdminTableRecord>({
           ))}
         </ul>
       </div>
-      {rows.length === 0 && (
+      {!query.isLoading && !query.isError && rows.length === 0 && (
         <p className='p-8 text-center text-sm text-slate-500'>
           {search ? 'No matching records.' : 'No records yet.'}
         </p>
@@ -307,7 +319,7 @@ export function AdminDataTable<T extends AdminTableRecord>({
           <button
             type='button'
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            disabled={busy || !table.getCanPreviousPage()}
             className='rounded border px-3 py-2 disabled:opacity-40'
           >
             Previous
@@ -315,7 +327,7 @@ export function AdminDataTable<T extends AdminTableRecord>({
           <button
             type='button'
             onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            disabled={busy || !table.getCanNextPage()}
             className='rounded border px-3 py-2 disabled:opacity-40'
           >
             Next

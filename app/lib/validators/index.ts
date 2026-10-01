@@ -130,3 +130,14 @@ export const preorderCheckoutResponseSchema = z.object({
     }),
   }),
 });
+
+export const adminRecordsQuerySchema = z.object({
+  kind: z.enum(['orders', 'waitlist']),
+  page: z.coerce.number().int().min(0).max(1000000).default(0),
+  pageSize: z.coerce.number().pipe(z.union([z.literal(10), z.literal(25), z.literal(50)])).default(10),
+  search: z.string().trim().max(200).default(''),
+  sort: z.string().default('createdAt'),
+  direction: z.enum(['asc', 'desc']).default('desc'),
+}).refine((query) => (query.kind === 'orders'
+  ? ['id', 'customer', 'email', 'status', 'payment', 'createdAt']
+  : ['name', 'email', 'phone', 'category', 'createdAt']).includes(query.sort), { message: 'Invalid sort column.' });

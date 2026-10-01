@@ -5,7 +5,6 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type {
   AdminOrderRow,
   AdminWaitlistRow,
-  AdminTablesProps,
 } from '@/app/lib/types';
 import { AdminDataTable } from './data-table';
 
@@ -13,7 +12,7 @@ function formatDate(date: string | null) {
   return date ? new Date(date).toLocaleDateString('en-GB') : '—';
 }
 
-export function AdminTables({ data }: AdminTablesProps) {
+export function AdminTables() {
   const orders = useMemo<ColumnDef<AdminOrderRow>[]>(
     () => [
       {
@@ -87,15 +86,13 @@ export function AdminTables({ data }: AdminTablesProps) {
     <div className='min-w-0 space-y-6'>
       <AdminDataTable
         title='Orders'
-        data={data.orderRows}
+        kind='orders'
         columns={orders}
-        totalCount={data.orderCount}
       />
       <AdminDataTable
         title='Waitlist'
-        data={data.waitlistRows}
+        kind='waitlist'
         columns={waitlist}
-        totalCount={data.waitlistCount}
       />
     </div>
   );

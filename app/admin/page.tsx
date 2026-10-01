@@ -63,7 +63,7 @@ export default function AdminPage() {
           </div>
         </section>
 
-        {data && <AdminTables data={data} />}
+        {data && <AdminTables />}
       </div>
     </main>
   );
