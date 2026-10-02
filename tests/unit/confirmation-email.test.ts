@@ -41,9 +41,33 @@ test('confirmation includes order details and excludes a delivery timeline', () 
     'support@example.com',
   ])
     expect(payload.text).toContain(value);
+  for (const value of [
+    'Preorder confirmed',
+    'RITNA Hardcover × 2',
+    'NGN 70,000',
+    '1 Main Street',
+    'order-test',
+  ])
+    expect(payload.html).toContain(value);
   expect(payload.text).not.toMatch(
     /timeline|expected delivery|arrives|business days/i,
   );
+  expect(payload.html).not.toMatch(
+    /timeline|expected delivery|arrives|business days/i,
+  );
+});
+
+test('confirmation escapes customer-controlled HTML', () => {
+  const unsafe = buildConfirmationEmail(
+    { ...order, shippingFullName: '<script>alert(1)</script>' },
+    [{ title: '<b>Book</b>', quantity: 1, unitPrice: 35000 }],
+    'RITNA <orders@example.com>',
+    'support@example.com',
+  );
+  expect(unsafe.html).not.toContain('<script>');
+  expect(unsafe.html).not.toContain('<b>Book</b>');
+  expect(unsafe.html).toContain('&lt;script&gt;');
+  expect(unsafe.html).toContain('&lt;b&gt;Book&lt;/b&gt;');
 });
 
 test('email retries use the same provider idempotency key and payload', async () => {
