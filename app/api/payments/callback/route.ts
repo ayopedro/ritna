@@ -1,3 +1,4 @@
+import { getPaymentResultUrl } from '@/app/lib/payments/callback-url';
 import { logError } from '@/app/lib/logger';
 import { withApi } from '@/app/lib/api/handler';
 import { NextResponse } from 'next/server';
@@ -19,8 +20,7 @@ async function handleGET(request: Request) {
     logError('api.handled_error', error);
     // The result page can retry verification without treating a provider outage as failure.
   }
-  const destination = new URL('/preorder/payment', request.url);
-  destination.searchParams.set('reference', reference.data);
+  const destination = getPaymentResultUrl(request, reference.data);
   return NextResponse.redirect(destination, 303);
 }
 
