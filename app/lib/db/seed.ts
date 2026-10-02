@@ -1,3 +1,4 @@
+import { log, logError } from '../logger';
 import 'dotenv/config';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -62,11 +63,11 @@ async function main() {
     if (rows.length === 0) continue;
 
     await seed(rows);
-    console.log(`Seeded ${rows.length} records from ${file}`);
+    log('info', 'database.seed_completed');
   }
 }
 
 main().catch((error) => {
-  console.error('Seeding failed:', error);
+  logError('database.seed_failed', error);
   process.exitCode = 1;
 });

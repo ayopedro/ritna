@@ -1,20 +1,14 @@
 "use client";
 
+import type { TimeLeft } from "@/lib/types";
+
+import { BOOK_LAUNCH_DATE, COUNTDOWN_INTERVAL_MS } from "@/lib/constants";
+
 import { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
 
-const TARGET_DATE = new Date("2026-11-07T00:00:00");
-
-interface TimeLeft {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  isExpired: boolean;
-}
-
 function getTimeRemaining(): TimeLeft {
-  const total = TARGET_DATE.getTime() - Date.now();
+  const total = new Date(BOOK_LAUNCH_DATE).getTime() - Date.now();
   if (total <= 0) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true };
   }
@@ -34,7 +28,7 @@ export function CountdownBadge() {
     setTimeLeft(getTimeRemaining());
     const interval = setInterval(() => {
       setTimeLeft(getTimeRemaining());
-    }, 1000);
+    }, COUNTDOWN_INTERVAL_MS);
     return () => clearInterval(interval);
   }, []);
 

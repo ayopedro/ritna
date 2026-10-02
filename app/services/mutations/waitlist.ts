@@ -1,11 +1,13 @@
-import { JoinWaitlistFormData } from "@/app/components/waitlist-form";
+
+import { API_ENDPOINTS, MUTATION_KEYS } from "@/lib/constants";
+import type { JoinWaitlistFormData } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query"
 
 export const useJoinWaitlistMutation = () =>
   useMutation({
-    mutationKey: ['join-waitlist'],
+    mutationKey: MUTATION_KEYS.joinWaitlist,
     mutationFn: async (data: JoinWaitlistFormData) => {
-            const response = await fetch("/api/waitlist", {
+            const response = await fetch(API_ENDPOINTS.waitlist, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

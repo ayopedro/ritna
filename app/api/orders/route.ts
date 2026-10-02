@@ -1,7 +1,8 @@
-import { NextRequest } from "next/server";
+import { withApi } from '@/app/lib/api/handler';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  console.log('🪄 ~ GET ~ request:', request.nextUrl)
-  console.log('Orders API called');
-  return Response.json({ message: 'Hello Orders!' });
+async function handleGET() {
+  return NextResponse.json({ success: false, message: 'This endpoint is not implemented.' }, { status: 501 });
 }
+
+export const GET = withApi('/api/orders', handleGET, true);
