@@ -7,6 +7,10 @@ export async function register() {
       process.env.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT)
   ) {
     const { registerOTel } = await import('@vercel/otel');
+    const { BatchSpanProcessor } =
+      await import('@opentelemetry/sdk-trace-base');
+    const { OTLPTraceExporter } =
+      await import('@opentelemetry/exporter-trace-otlp-proto');
     const { privacySpanProcessor } =
       await import('./app/lib/telemetry/privacy');
     const disabled = process.env.OTEL_SDK_DISABLED;
@@ -15,10 +19,14 @@ export async function register() {
       registerOTel({
         serviceName: process.env.OTEL_SERVICE_NAME || 'ritna',
         instrumentations: [],
+        propagators: ['tracecontext', 'baggage'],
         spanProcessors:
           process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
           process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-            ? [privacySpanProcessor, 'auto']
+            ? [
+                privacySpanProcessor,
+                new BatchSpanProcessor(new OTLPTraceExporter()),
+              ]
             : [privacySpanProcessor],
       });
       const { registerLogs } =

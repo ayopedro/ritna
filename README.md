@@ -165,5 +165,9 @@ and API route bundles share it in the production Next.js server. On startup,
 or explicit disabling; `telemetry.logs.export_failed` in server stdout indicates
 an exporter failure. These diagnostics do not include collector credentials.
 
+Self-hosted tracing uses explicit HTTP/protobuf OTLP export and W3C trace-context
+and baggage propagation. Vercel-specific telemetry propagation and exporters are
+not enabled, so the application does not require a Vercel telemetry extension.
+
 
 Admin authentication verification: `bun test tests/unit`; run database integration checks with `bun --env-file=.env.local test tests/integration/admin-auth.test.ts`. Integration tests create temporary admin/book/order fixtures and mock email delivery. Admin browser tests use temporary database sessions: `bunx playwright test tests/e2e/admin.spec.ts tests/e2e/admin-tables.spec.ts`.
