@@ -3,7 +3,7 @@ import { withSpan, traceFields } from '@/app/lib/telemetry/tracing';
 import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { log, logContext, logError } from '@/app/lib/logger';
-import { requireAdmin, validAdminOrigin } from '@/app/lib/auth/basic';
+import { requireAdmin, validAdminOrigin } from '@/app/lib/auth/session';
 
 export function withApi<T extends unknown[]>(
   route: string,
@@ -26,7 +26,7 @@ export function withApi<T extends unknown[]>(
           async () => {
             let response: Response;
             try {
-              const denied = admin ? requireAdmin(request) : null;
+              const denied = admin ? await requireAdmin(request) : null;
               if (denied) {
                 response = denied;
               } else if (

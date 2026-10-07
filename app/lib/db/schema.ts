@@ -1,6 +1,7 @@
 import type { ConfirmationEmailPayload } from '@/app/lib/types';
 import { relations, sql } from 'drizzle-orm';
 import {
+  boolean,
   jsonb,
   check,
   index,
@@ -205,6 +206,7 @@ export const books = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     title: varchar('title', { length: 255 }).notNull(),
+    available: boolean('available').default(false).notNull(),
     price: integer('price').notNull(),
     type: bookTypeEnum('bookType').default('hardcover').notNull(),
     image: varchar('image', { length: 255 }),
@@ -288,4 +290,24 @@ export const orderConfirmationEmails = pgTable('order_confirmation_emails', {
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
+});
+
+export const adminUsers = pgTable('admin_users', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  active: boolean('active').default(true).notNull(),
+  lastLoginRequestedAt: timestamp('last_login_requested_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const adminLoginTokens = pgTable('admin_login_tokens', {
+  tokenHash: varchar('token_hash', { length: 64 }).primaryKey(),
+  adminId: uuid('admin_id').notNull().references(() => adminUsers.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+});
+
+export const adminSessions = pgTable('admin_sessions', {
+  tokenHash: varchar('token_hash', { length: 64 }).primaryKey(),
+  adminId: uuid('admin_id').notNull().references(() => adminUsers.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
 });

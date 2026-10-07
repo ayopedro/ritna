@@ -1,11 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-test.use({
-  httpCredentials: {
-    username: process.env.ADMIN_USERNAME!,
-    password: process.env.ADMIN_PASSWORD!,
-  },
-});
+import { adminSession } from './helpers/admin-session';
+let cleanup: (() => void) | undefined;
+test.beforeEach(async ({ context }) => { cleanup = await adminSession(context); });
+test.afterEach(() => { cleanup?.(); });
 
 test('admin tables preserve selection across pages and adapt to mobile', async ({
   page,

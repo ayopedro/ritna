@@ -4,7 +4,6 @@ import { createHash } from 'node:crypto';
 import { eq, inArray, sql } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
 import { books, customers, orders, orderItems } from '@/app/lib/db/schema';
-import { AVAILABLE_BOOK_EDITIONS } from '@/app/lib/constants';
 import type { PreorderRecord, ValidatedPreorder } from '@/app/lib/types';
 
 export async function createPreorder(
@@ -56,7 +55,7 @@ export async function createPreorder(
           );
         if (
           catalog.length !== items.length ||
-          catalog.some((book) => !AVAILABLE_BOOK_EDITIONS.includes(book.type))
+          catalog.some((book) => !book.available)
         ) {
           return {
             error: 'One or more books are unavailable for preorder.',

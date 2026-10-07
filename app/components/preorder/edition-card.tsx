@@ -4,7 +4,6 @@ import type { EditionCardProps } from "@/lib/types";
 
 import { Minus, Plus } from 'lucide-react';
 import { useCartStore } from '../../lib/stores/cart';
-import { AVAILABLE_BOOK_EDITIONS } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
 export function EditionCard({ book }: EditionCardProps) {
@@ -14,7 +13,7 @@ export function EditionCard({ book }: EditionCardProps) {
   const addItem = useCartStore((state) => state.addItem);
   const removeItem = useCartStore((state) => state.removeItem);
   
-  return !AVAILABLE_BOOK_EDITIONS.includes(book.type) ? (
+  return !book.available ? (
     <div className='border border-slate-200 rounded-2xl p-5 flex flex-col items-start justify-between gap-4 bg-white hover:border-slate-300 transition-colors shadow-xs sm:flex-row sm:items-center'>
       <div className='flex flex-col gap-1'>
         <div className='flex items-center gap-2'>
@@ -22,7 +21,7 @@ export function EditionCard({ book }: EditionCardProps) {
             {book.title}
           </span>
           <span className='text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md uppercase tracking-wider'>
-            COMING SOON
+            UNAVAILABLE
           </span>
         </div>
         <p className='text-xs text-slate-500 leading-snug'>

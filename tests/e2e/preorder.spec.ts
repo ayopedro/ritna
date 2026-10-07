@@ -11,6 +11,7 @@ test('mobile cart shows selected book and opens shipping', async ({ page }) => {
             id: '3514673a-4b58-5be3-a639-aab2f51d2c25',
             title: 'RITNA Hardcover',
             type: 'hardcover',
+            available: true,
             price: 35_000,
             image: '/assets/ritna4.jpg',
             description: 'Premium print hardcover edition',

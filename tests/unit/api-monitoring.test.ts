@@ -1,33 +1,21 @@
-import { afterEach, expect, test } from 'bun:test';
+import { expect, test } from 'bun:test';
 import { NextRequest } from 'next/server';
-import { requireAdmin } from '../../app/lib/auth/basic';
+import { requireAdmin, validAdminOrigin, hashToken, newToken, requestSessionToken } from '../../app/lib/auth/session';
 import { withApi } from '../../app/lib/api/handler';
 import { log } from '../../app/lib/logger';
 
-const username = process.env.ADMIN_USERNAME;
-const password = process.env.ADMIN_PASSWORD;
-afterEach(() => {
-  if (username === undefined) delete process.env.ADMIN_USERNAME; else process.env.ADMIN_USERNAME = username;
-  if (password === undefined) delete process.env.ADMIN_PASSWORD; else process.env.ADMIN_PASSWORD = password;
-});
-
-function credentials() {
-  process.env.ADMIN_USERNAME = 'test-admin';
-  process.env.ADMIN_PASSWORD = 'test-password';
-  return `Basic ${Buffer.from('test-admin:test-password').toString('base64')}`;
-}
-
-test('Basic Auth fails closed and accepts configured credentials', () => {
-  delete process.env.ADMIN_USERNAME;
-  expect(requireAdmin(new Request('https://ritna.test/admin'))?.status).toBe(503);
-  const authorization = credentials();
-  expect(requireAdmin(new Request('https://ritna.test/admin'))?.status).toBe(401);
-  expect(requireAdmin(new Request('https://ritna.test/admin', { headers: { authorization } }))).toBeNull();
-  expect(requireAdmin(new Request('https://ritna.test/admin', { headers: { authorization: 'Basic wrong' } }))?.status).toBe(401);
+test('missing, malformed, and Basic Auth credentials fail closed', async () => {
+  for (const headers of [{}, { authorization: 'Basic dGVzdDp0ZXN0' }, { cookie: 'ritna_admin_session=invalid' }] as Record<string, string>[]) {
+    expect((await requireAdmin(new Request('https://ritna.test/admin', { headers })))?.status).toBe(401);
+  }
+  const token = newToken();
+  expect(token).toHaveLength(64);
+  expect(hashToken(token)).toHaveLength(64);
+  expect(hashToken(token)).not.toBe(token);
+  expect(requestSessionToken(new Request('https://ritna.test', { headers: { cookie: `other=value; ritna_admin_session=${token}` } }))).toBe(token);
 });
 
 test('private API authorization is enforced without proxy', async () => {
-  credentials();
   let called = false;
   const handler = withApi('/api/admin/overview', async () => { called = true; return Response.json({}); }, true);
   const response = await handler(new NextRequest('https://ritna.test/api/admin/overview'));
@@ -43,11 +31,16 @@ test('API errors do not expose database details', async () => {
   expect(await response.text()).not.toContain('secret database password');
 });
 
-test('authenticated cross-origin mutations are rejected', async () => {
-  const authorization = credentials();
-  const handler = withApi('/api/customers', async () => Response.json({}), true);
-  const denied = await handler(new NextRequest('https://ritna.test/api/customers', { method: 'POST', headers: { authorization, origin: 'https://other.test' } }));
-  expect(denied.status).toBe(403);
+test('admin origin check rejects missing and cross-origin headers', () => {
+  const original = process.env.ADMIN_APP_URL;
+  process.env.ADMIN_APP_URL = 'https://ritna.test';
+  try {
+    expect(validAdminOrigin(new Request('https://ritna.test/api/auth/login'))).toBe(false);
+    expect(validAdminOrigin(new Request('https://ritna.test/api/auth/login', { headers: { origin: 'https://other.test' } }))).toBe(false);
+    expect(validAdminOrigin(new Request('https://ritna.test/api/auth/login', { headers: { origin: 'https://ritna.test' } }))).toBe(true);
+  } finally {
+    if (original === undefined) delete process.env.ADMIN_APP_URL; else process.env.ADMIN_APP_URL = original;
+  }
 });
 
 test('logger only accepts approved metadata fields', () => {

@@ -1,12 +1,23 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { AdminBooks } from '@/app/components/admin/books';
 import { useGetAdminStats } from '@/app/services/queries/admin';
 import type { AdminStats } from '../lib/types';
 import { AdminTables } from '@/app/components/admin/tables';
 
 export default function AdminPage() {
   const { data, isLoading, isError, refetch } = useGetAdminStats<AdminStats>();
+
+  const [logoutError, setLogoutError] = useState('');
+  async function logout() {
+    try {
+      const response = await fetch('/api/auth/logout', { method: 'POST' });
+      if (!response.ok) throw new Error();
+      window.location.assign('/admin/login');
+    } catch { setLogoutError('Unable to sign out. Please try again.'); }
+  }
 
   return (
     <main className='min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-10'>
@@ -20,17 +31,21 @@ export default function AdminPage() {
               Admin dashboard
             </h1>
             <p className='mt-2 text-sm text-slate-500'>
-              Orders and waitlist at a glance.
+              Manage books, orders, and the waitlist.
             </p>
           </div>
+          <div className="flex items-center gap-3">
+          <button onClick={() => void logout()} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium">Sign out</button>
           <Link
             href='/'
             className='rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium hover:bg-slate-100'
           >
             View site
           </Link>
+          </div>
         </header>
 
+        {logoutError && <p role="alert">{logoutError}</p>}
         {isLoading && <p role='status' className='mb-6 text-slate-500'>Loading dashboard...</p>}
         {isError && (
           <div role='alert' className='mb-6 rounded-xl bg-red-50 p-4 text-red-700'>
@@ -62,6 +77,8 @@ export default function AdminPage() {
             </p>
           </div>
         </section>
+
+        <AdminBooks />
 
         {data && <AdminTables />}
       </div>

@@ -37,7 +37,6 @@ export enum BookEdition {
   INSTITUTIONAL = 'institutional',
 }
 
-export const AVAILABLE_BOOK_EDITIONS: readonly string[] = [BookEdition.HARDCOVER];
 
 export const NIGERIAN_STATES = [
   'Abia',

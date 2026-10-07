@@ -3,6 +3,7 @@ import type { BookEdition } from './constants';
 export { BookEdition } from './constants';
 
 export interface Book {
+  available: boolean;
   id: string;
   title: string;
   price: number;
