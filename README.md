@@ -103,7 +103,8 @@ identifiers. Retries reuse the saved order reference. Existing references retain
 ### OpenTelemetry tracing
 
 The Next.js `instrumentation.ts` hook registers OpenTelemetry on the server when
-`OTEL_EXPORTER_OTLP_ENDPOINT` or `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` is configured.
+`OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, or
+`OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` is configured.
 Set `OTEL_SERVICE_NAME=ritna` and `OTEL_EXPORTER_OTLP_ENDPOINT` to your Alloy or
 OpenTelemetry collector's HTTP base URL; `/v1/traces` is appended automatically.
 Alternatively, set `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` to the complete URL,
@@ -115,9 +116,9 @@ These variables are server-only; never prefix them with `NEXT_PUBLIC_`.
 
 Traces include Next.js framework spans, API route spans, payment initialization and
 verification, and database transactions for creating orders and confirming payment.
-Logs remain structured JSON on stdout/stderr for collection by Alloy, with `traceId`
-and `spanId` linking them to active traces. API responses include `X-Trace-ID` when
-tracing is active. There is no browser SDK or OTLP log/metrics exporter in this setup.
+Application logs are exported in batches over OTLP to `/v1/logs` and also remain
+structured JSON on stdout/stderr. `traceId` and `spanId` link logs to active traces. API responses include `X-Trace-ID` when
+tracing is active. There is no browser SDK or metrics exporter in this setup.
 
 Spans record route templates, provider names, status and timings. Customer details,
 checkout session URLs, raw SQL, headers, and raw exception messages are excluded.
@@ -128,3 +129,15 @@ Restart/redeploy after configuration changes. No endpoint means tracing stays of
 set `OTEL_TRACES_SAMPLER=parentbased_traceidratio` and `OTEL_TRACES_SAMPLER_ARG=0.1`
 for 10% of root traces. Export is batched and requires the collector to accept OTLP
 traces. This does not provision Alloy, Tempo, or a Grafana dashboard.
+
+
+Application logs use the same `OTEL_EXPORTER_OTLP_ENDPOINT` and
+`OTEL_EXPORTER_OTLP_HEADERS` as traces. To override the log destination, set
+`OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` to a complete URL ending in `/v1/logs` and
+`OTEL_EXPORTER_OTLP_LOGS_HEADERS` for signal-specific authentication. The log
+exporter sends HTTP/protobuf. Set `OTEL_LOGS_EXPORTER=none` to keep only stdout
+logging. Generate API traffic after restarting, then allow a few seconds for batch
+export. Only calls to the application logger are exported; arbitrary console output
+and Next.js startup messages are not intercepted. Alloy must have its OTLP logs
+receiver connected to the logs backend (usually Loki); a working Tempo trace
+pipeline alone does not collect logs.

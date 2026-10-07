@@ -3,7 +3,8 @@ export async function register() {
     process.env.NEXT_RUNTIME === 'nodejs' &&
     process.env.OTEL_SDK_DISABLED?.toLowerCase() !== 'true' &&
     (process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
-      process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT)
+      process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT ||
+      process.env.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT)
   ) {
     const { registerOTel } = await import('@vercel/otel');
     const { privacySpanProcessor } =
@@ -14,8 +15,15 @@ export async function register() {
       registerOTel({
         serviceName: process.env.OTEL_SERVICE_NAME || 'ritna',
         instrumentations: [],
-        spanProcessors: [privacySpanProcessor, 'auto'],
+        spanProcessors:
+          process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
+          process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+            ? [privacySpanProcessor, 'auto']
+            : [privacySpanProcessor],
       });
+      const { registerLogs } =
+        await import('./app/lib/telemetry/register-logs');
+      registerLogs();
     } finally {
       if (disabled !== undefined) process.env.OTEL_SDK_DISABLED = disabled;
     }
