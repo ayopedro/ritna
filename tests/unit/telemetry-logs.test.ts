@@ -4,11 +4,11 @@ import {
   SimpleLogRecordProcessor,
   InMemoryLogRecordExporter,
 } from '@opentelemetry/sdk-logs';
-import { setTelemetryLogger } from '../../app/lib/telemetry/logs';
+import { logs } from '@opentelemetry/api-logs';
 import { log, logContext } from '../../app/lib/logger';
 
 afterEach(() => {
-  setTelemetryLogger();
+  logs.disable();
 });
 
 test('application logs export structured JSON, severity and request context while retaining stdout', async () => {
@@ -16,7 +16,7 @@ test('application logs export structured JSON, severity and request context whil
   const provider = new LoggerProvider({
     processors: [new SimpleLogRecordProcessor({ exporter })],
   });
-  setTelemetryLogger(provider.getLogger('ritna-test'));
+  logs.setGlobalLoggerProvider(provider);
   const original = console.warn;
   const lines: string[] = [];
   console.warn = (line: string) => {
@@ -44,7 +44,26 @@ test('application logs export structured JSON, severity and request context whil
     expect(String(record.body)).not.toContain('private-secret');
   } finally {
     console.warn = original;
-    setTelemetryLogger();
+    logs.disable();
     await provider.shutdown();
   }
+});
+
+test('log exporter reports failures on stdout without leaking collector error messages', async () => {
+  const { reportLogExportFailures } = await import('../../app/lib/telemetry/log-exporter');
+  const original = console.error;
+  const lines: string[] = [];
+  console.error = (line: string) => { lines.push(line); };
+  try {
+    let called = false;
+    const exporter = reportLogExportFailures({
+      export(_records, callback) { callback({ code: 1, error: new Error('Bearer private-collector-secret') }); },
+      async forceFlush() {},
+      async shutdown() {},
+    });
+    exporter.export([], () => { called = true; });
+    expect(called).toBe(true);
+    expect(JSON.parse(lines[0])).toMatchObject({ event: 'telemetry.logs.export_failed', errorCode: 'OTLP_LOG_EXPORT_FAILED' });
+    expect(lines[0]).not.toContain('private-collector-secret');
+  } finally { console.error = original; }
 });
