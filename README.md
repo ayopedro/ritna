@@ -113,7 +113,6 @@ where they can be searched and sorted. New provider payment references include t
 order reference; existing provider references remain valid. UUIDs remain internal
 identifiers. Retries reuse the saved order reference. Existing references retain their values. Previously sent receipts and emails are unchanged.
 
-
 ### OpenTelemetry tracing
 
 The Next.js `instrumentation.ts` hook registers OpenTelemetry on the server when
@@ -144,7 +143,6 @@ set `OTEL_TRACES_SAMPLER=parentbased_traceidratio` and `OTEL_TRACES_SAMPLER_ARG=
 for 10% of root traces. Export is batched and requires the collector to accept OTLP
 traces. This does not provision Alloy, Tempo, or a Grafana dashboard.
 
-
 Application logs use the same `OTEL_EXPORTER_OTLP_ENDPOINT` and
 `OTEL_EXPORTER_OTLP_HEADERS` as traces. To override the log destination, set
 `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` to a complete URL ending in `/v1/logs` and
@@ -155,7 +153,6 @@ export. Only calls to the application logger are exported; arbitrary console out
 and Next.js startup messages are not intercepted. Alloy must have its OTLP logs
 receiver connected to the logs backend (usually Loki); a working Tempo trace
 pipeline alone does not collect logs.
-
 
 Log export registers the OpenTelemetry global logger provider so instrumentation
 and API route bundles share it in the production Next.js server. On startup,
@@ -168,6 +165,5 @@ an exporter failure. These diagnostics do not include collector credentials.
 Self-hosted tracing uses explicit HTTP/protobuf OTLP export and W3C trace-context
 and baggage propagation. Vercel-specific telemetry propagation and exporters are
 not enabled, so the application does not require a Vercel telemetry extension.
-
 
 Admin authentication verification: `bun test tests/unit`; run database integration checks with `bun --env-file=.env.local test tests/integration/admin-auth.test.ts`. Integration tests create temporary admin/book/order fixtures and mock email delivery. Admin browser tests use temporary database sessions: `bunx playwright test tests/e2e/admin.spec.ts tests/e2e/admin-tables.spec.ts`.
