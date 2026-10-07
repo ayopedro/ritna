@@ -11,7 +11,7 @@ jobs:
     env:
       CI: true
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/ritna_test
-      ADMIN_EMAIL: admin@example.com
+      ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
       ADMIN_APP_URL: http://localhost:3000
     services:
       postgres:

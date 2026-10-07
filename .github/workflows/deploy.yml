@@ -38,4 +38,4 @@ jobs:
         if: inputs.operation == 'seed' || inputs.operation == 'migrate-and-seed'
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}

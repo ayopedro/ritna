@@ -47,7 +47,7 @@ VALUES ('admin-one@example.com'), ('admin-two@example.com')
 ON CONFLICT (email) DO NOTHING;
 ```
 
-Alternatively, set the private `ADMIN_EMAIL` environment variable and run `bun run db.seed` to bootstrap one admin. Leave it blank to skip admin seeding. The deployment seed workflow accepts an optional GitHub `ADMIN_EMAIL` secret. Keep real email addresses in the database or private configuration, never tracked files or `NEXT_PUBLIC_` variables. Seed reruns preserve existing admins and their active state.
+Alternatively, set the private `ADMIN_EMAIL` environment variable and run `bun run db.seed` to bootstrap one admin. Leave it blank to skip admin seeding. The deployment and test seed workflows read the optional GitHub Actions `ADMIN_EMAIL` variable (`vars.ADMIN_EMAIL`). Keep real email addresses in the database or private configuration, never tracked files or `NEXT_PUBLIC_` variables. Seed reruns preserve existing admins and their active state.
 
 Open `/admin` and request a login link using an active admin’s email. Clicking the emailed link creates a seven-day session and opens the dashboard automatically. Links expire after five minutes and can be used once; requests have a one-minute cooldown per admin. Signing out revokes the current session. Set an admin’s `active` field to `false` to revoke all their access, including existing sessions. There is no public registration.
 
