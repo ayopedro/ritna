@@ -4,23 +4,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { db } from './index';
-import { books, reviews } from './schema';
+import { adminUsers, books, reviews } from './schema';
 
 const SEED_DIR = path.join(process.cwd(), 'app/lib/db/seeds');
 
 const seeders: Record<string, (rows: unknown[]) => Promise<void>> = {
+  adminUsers: async (rows) => {
+    await db.insert(adminUsers).values(rows as (typeof adminUsers.$inferInsert)[])
+      .onConflictDoNothing({ target: adminUsers.email });
+  },
   books: async (rows) => {
     for (const row of rows as (typeof books.$inferInsert)[]) {
-      await db.insert(books).values(row).onConflictDoUpdate({
-        target: books.id,
-        set: {
-          title: row.title,
-          price: row.price,
-          type: row.type,
-          image: row.image,
-          description: row.description,
-        },
-      });
+      // Catalog edits made in the dashboard must survive subsequent deployments.
+      await db.insert(books).values(row).onConflictDoNothing({ target: books.id });
     }
   },
   reviews: async (rows) => {

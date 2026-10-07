@@ -37,7 +37,21 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Admin
 
-Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env.local` (see `.env.example`), then open `/admin`. The browser prompts for those credentials. The dashboard is read-only and remains unavailable until both values are configured.
+Configure `ADMIN_APP_URL` with the site origin, `RESEND_API_KEY`, and a verified `ADMIN_EMAIL_FROM` (or `ORDER_EMAIL_FROM`). Production requires an HTTPS origin. Apply migrations with `bun run db.apply`.
+
+Admins are managed in the `admin_users` database table, which supports multiple email addresses. Add trimmed, lowercase addresses manually; IDs, timestamps, and `active = true` are assigned automatically. Replace these example addresses with the intended admins:
+
+```sql
+INSERT INTO admin_users (email)
+VALUES ('admin-one@example.com'), ('admin-two@example.com')
+ON CONFLICT (email) DO NOTHING;
+```
+
+Alternatively, set the private `ADMIN_EMAIL` environment variable and run `bun run db.seed` to bootstrap one admin. Leave it blank to skip admin seeding. The deployment seed workflow accepts an optional GitHub `ADMIN_EMAIL` secret. Keep real email addresses in the database or private configuration, never tracked files or `NEXT_PUBLIC_` variables. Seed reruns preserve existing admins and their active state.
+
+Open `/admin` and request a login link using an active admin’s email. Clicking the emailed link creates a seven-day session and opens the dashboard automatically. Links expire after five minutes and can be used once; requests have a one-minute cooldown per admin. Signing out revokes the current session. Set an admin’s `active` field to `false` to revoke all their access, including existing sessions. There is no public registration.
+
+The dashboard shows overview stats first, followed by a books table with availability badges. Each row’s pencil button opens an editor for title, description, edition, cover image, whole-naira price, and preorder availability. Unavailable books cannot be added to checkout. The server validates availability and uses current database prices for new orders; existing orders retain their original prices. Re-running the book seed preserves dashboard edits.
 
 ## End-to-end tests
 
@@ -45,7 +59,7 @@ Run `bun run test:e2e` after installing Playwright Chromium. CI starts PostgreSQ
 
 ## API logging and access
 
-Admin access continues to use browser Basic Auth with `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Use HTTPS in production. There is no application login route or session cookie. Both `/admin` and private API handlers check credentials; API protection does not rely on the page proxy.
+Admin access uses database-backed sessions in HttpOnly, SameSite=Lax cookies (Secure in production). Raw login and session tokens are never stored in the database; only SHA-256 hashes are stored. Login secrets are carried in URL fragments and automatically exchanged by POST when the login page opens. Both `/admin` and private API handlers validate active admin sessions. Admin mutations and auth POSTs enforce `ADMIN_APP_URL` as the request origin. Production requires an HTTPS `ADMIN_APP_URL`. The public book catalog, waitlist signup/count, preorder, payment initiation/callback, and signature-verified webhooks remain accessible to customers.
 
 Private APIs include admin overview, customer endpoints, order listing/detail, and payment listing. Public checkout, books, waitlist, callback, and signed webhook routes remain accessible. Private POST requests also require an `Origin` header matching the application origin.
 
@@ -150,3 +164,10 @@ and API route bundles share it in the production Next.js server. On startup,
 `api.request_completed`. `telemetry.logs.disabled` explains missing log endpoints
 or explicit disabling; `telemetry.logs.export_failed` in server stdout indicates
 an exporter failure. These diagnostics do not include collector credentials.
+
+Self-hosted tracing uses explicit HTTP/protobuf OTLP export and W3C trace-context
+and baggage propagation. Vercel-specific telemetry propagation and exporters are
+not enabled, so the application does not require a Vercel telemetry extension.
+
+
+Admin authentication verification: `bun test tests/unit`; run database integration checks with `bun --env-file=.env.local test tests/integration/admin-auth.test.ts`. Integration tests create temporary admin/book/order fixtures and mock email delivery. Admin browser tests use temporary database sessions: `bunx playwright test tests/e2e/admin.spec.ts tests/e2e/admin-tables.spec.ts`.

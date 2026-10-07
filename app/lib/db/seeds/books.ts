@@ -7,6 +7,7 @@ const booksSeed = [
     title: 'RITNA Hardcover',
     type: BookEdition.HARDCOVER,
     price: 35_000,
+    available: true,
     image: '/assets/ritna4.jpg',
     description:
       'Premium print hardcover edition, shipped to your delivery address',
