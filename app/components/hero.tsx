@@ -4,10 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CountdownBadge } from "./countdown-badge";
 import { Button } from "./button";
-import { useGetWaitlistCount } from "../services/queries/waitlist";
 
 export function Hero() {
-  const { data } = useGetWaitlistCount();
   const router = useRouter();
 
   return (
@@ -35,37 +33,6 @@ export function Hero() {
             onClick={() => router.push("/preorder")}
           />
         </div>
-
-        {data?.totalSubscribers > 3 ? (
-          <div className="flex items-center gap-2">
-            <div className="flex -space-x-3">
-              <Image
-                src="https://i.pravatar.cc/100?img=44"
-                alt="Reader"
-                width={40}
-                height={40}
-                className="w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover"
-              />
-              <Image
-                src="https://i.pravatar.cc/100?img=47"
-                alt="Reader"
-                width={40}
-                height={40}
-                className="w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover"
-              />
-              <Image
-                src="https://i.pravatar.cc/100?img=48"
-                alt="Reader"
-                width={40}
-                height={40}
-                className="w-10 h-10 rounded-full border-2 border-[#9fcbda] object-cover"
-              />
-            </div>
-            <span className="text-sm font-medium text-[#2d404d]">
-              {data?.totalSubscribers} readers on the waitlist
-            </span>
-          </div>
-        ) : null}
       </div>
 
       <div className="relative flex justify-center lg:justify-end mt-8 lg:mt-0">
