@@ -7,6 +7,7 @@ import { db } from '@/app/lib/db';
 import { orders } from '@/app/lib/db/schema';
 import { initiatePaymentSchema } from '@/app/lib/validators';
 import { createOrderPayment } from '@/app/lib/payments/create-order-payment';
+import { isPaymentConfigured } from '@/app/lib/payments/configuration';
 
 async function handlePOST(request: Request) {
   let body: unknown;
@@ -31,7 +32,7 @@ async function handlePOST(request: Request) {
       { status: 400 },
     );
   }
-  if (!process.env.PAYSTACK_SECRET_KEY) {
+  if (!isPaymentConfigured()) {
     return NextResponse.json(
       { success: false, message: 'Payment service is not configured.' },
       { status: 503 },

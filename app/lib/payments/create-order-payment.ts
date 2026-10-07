@@ -6,16 +6,15 @@ import type { PreorderRecord } from '@/app/lib/types';
 import { verifyOrderPayment } from './verify-order-payment';
 import { initializePaystack } from './paystack';
 import { initializeBachs } from './bachs';
+import { configuredProvider } from './configuration';
 
-function configuredProvider() {
-  const provider = process.env.PAYMENT_PROVIDER || 'paystack';
-  if (provider !== 'paystack' && provider !== 'bachs') throw new Error('Invalid payment provider.');
-  return provider;
-}
-
-async function initialize(provider: string, input: Parameters<typeof initializePaystack>[0] & { name: string }) {
+async function initialize(
+  provider: string,
+  input: Parameters<typeof initializePaystack>[0] & { name: string },
+) {
   if (provider === 'bachs') return initializeBachs(input);
-  if (provider === 'paystack') return { authorizationUrl: await initializePaystack(input) };
+  if (provider === 'paystack')
+    return { authorizationUrl: await initializePaystack(input) };
   throw new Error('Unknown payment provider.');
 }
 
@@ -26,7 +25,7 @@ export async function createOrderPayment(order: PreorderRecord) {
     .where(eq(payments.orderId, order.id))
     .orderBy(desc(payments.createdAt))
     .limit(1);
-  let provider = configuredProvider();
+  let provider: string = existing?.provider ?? configuredProvider();
   let attemptKey = order.idempotencyKey;
   let reference = `preorder-${order.id}`;
   if (existing) {

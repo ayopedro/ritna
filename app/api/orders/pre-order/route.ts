@@ -2,6 +2,7 @@ import { logError } from '@/app/lib/logger';
 import { withApi } from '@/app/lib/api/handler';
 import { createPreorder } from '@/app/lib/orders/create-preorder';
 import { createOrderPayment } from '@/app/lib/payments/create-order-payment';
+import { isPaymentConfigured } from '@/app/lib/payments/configuration';
 import { createPreorderSchema } from '@/app/lib/validators';
 import { NextResponse } from 'next/server';
 import * as z from 'zod';
@@ -37,7 +38,7 @@ async function handlePOST(request: Request) {
     );
   }
 
-  if (!process.env.PAYSTACK_SECRET_KEY) {
+  if (!isPaymentConfigured()) {
     return NextResponse.json(
       { success: false, message: 'Payment service is not configured.' },
       { status: 503 },

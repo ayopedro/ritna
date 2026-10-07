@@ -60,9 +60,9 @@ Run `bun test tests/unit` for authentication, logging, payment, and email unit c
 ### Bachs payments
 
 Apply the database migration with `bun run db.apply` before deploying this change.
-To use Bachs for new orders, set `PAYMENT_PROVIDER=bachs`, `BACHS_API_KEY`,
+Bachs is the default provider for new orders. Configure `PAYMENT_PROVIDER=bachs`, `BACHS_API_KEY`,
 `BACHS_CALLBACK_URL=https://your-domain/api/payments/callback`, and
-`BACHS_WEBHOOK_SECRET`. Keep Paystack credentials configured to verify existing
+`BACHS_WEBHOOK_SECRET`. Set `PAYMENT_PROVIDER=paystack` to explicitly use Paystack for new orders. Keep Paystack credentials configured to verify existing
 Paystack orders. In Bachs, register `https://your-domain/api/payments/webhook/bachs`
 for `collection.succeeded` and `checkout.completed` events using an account-scoped
 endpoint. Use the endpoint's signing secret as `BACHS_WEBHOOK_SECRET`.
