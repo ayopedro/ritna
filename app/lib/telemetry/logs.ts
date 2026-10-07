@@ -1,11 +1,5 @@
-import { SeverityNumber, type Logger } from '@opentelemetry/api-logs';
+import { logs, SeverityNumber } from '@opentelemetry/api-logs';
 import type { Attributes } from '@opentelemetry/api';
-
-let telemetryLogger: Logger | undefined;
-
-export function setTelemetryLogger(logger?: Logger) {
-  telemetryLogger = logger;
-}
 
 export function emitTelemetryLog(
   level: 'info' | 'warn' | 'error',
@@ -13,7 +7,7 @@ export function emitTelemetryLog(
   attributes: Attributes,
 ) {
   try {
-    telemetryLogger?.emit({
+    logs.getLogger('ritna').emit({
       body,
       severityText: level.toUpperCase(),
       severityNumber: {

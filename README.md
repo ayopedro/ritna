@@ -141,3 +141,12 @@ export. Only calls to the application logger are exported; arbitrary console out
 and Next.js startup messages are not intercepted. Alloy must have its OTLP logs
 receiver connected to the logs backend (usually Loki); a working Tempo trace
 pipeline alone does not collect logs.
+
+
+Log export registers the OpenTelemetry global logger provider so instrumentation
+and API route bundles share it in the production Next.js server. On startup,
+`telemetry.logs.ready` is written to stdout and exported. Search Loki for
+`{service_name="ritna"}` after redeploying, then make an API request to generate
+`api.request_completed`. `telemetry.logs.disabled` explains missing log endpoints
+or explicit disabling; `telemetry.logs.export_failed` in server stdout indicates
+an exporter failure. These diagnostics do not include collector credentials.
