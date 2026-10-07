@@ -28,8 +28,7 @@ const statuses = {
     title: "You're part of the story.",
     message:
       'Thank you for preordering RITNA. Your payment is confirmed, and your preorder is secured.',
-    detail:
-      'Keep your payment reference for any questions about your order.',
+    detail: 'Keep your payment reference for any questions about your order.',
     icon: CircleCheck,
     colors: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
   },
@@ -55,7 +54,8 @@ const statuses = {
   reversed: {
     label: 'Payment reversed',
     title: 'Your payment was reversed.',
-    message: 'The payment provider reports that this payment has been reversed.',
+    message:
+      'The payment provider reports that this payment has been reversed.',
     detail:
       'Contact us with your payment reference before attempting another payment.',
     icon: RefreshCw,
@@ -81,9 +81,11 @@ export default async function PaymentResult({
   );
   let status: keyof typeof statuses = reference.success ? 'pending' : 'invalid';
   let emailPending = false;
+  let orderReference: string | undefined;
   if (reference.success) {
     try {
       const result = await verifyOrderPayment(reference.data);
+      orderReference = result.order.reference;
       if (result.providerStatus === 'success') {
         status = 'confirmed';
         emailPending = result.confirmationEmailPending;
@@ -96,8 +98,13 @@ export default async function PaymentResult({
   const content = statuses[status];
   const StatusIcon = content.icon;
   const supportEmail = process.env.ORDER_SUPPORT_EMAIL?.trim();
+  const supportReference = orderReference
+    ? `Order reference: ${orderReference}`
+    : reference.success
+      ? `Payment reference: ${reference.data}`
+      : 'I need help locating my preorder payment reference.';
   const supportHref = supportEmail
-    ? `mailto:${supportEmail}?subject=${encodeURIComponent('RITNA preorder payment')}&body=${encodeURIComponent(reference.success ? `Payment reference: ${reference.data}` : 'I need help locating my preorder payment reference.')}`
+    ? `mailto:${supportEmail}?subject=${encodeURIComponent('RITNA preorder payment')}&body=${encodeURIComponent(supportReference)}`
     : null;
   const focus =
     'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-700';
@@ -189,10 +196,10 @@ export default async function PaymentResult({
           {reference.success && (
             <div className='mt-7 rounded-xl border border-slate-200 bg-slate-50 px-5 py-4'>
               <p className='mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500'>
-                Payment reference
+                {orderReference ? 'Order reference' : 'Payment reference'}
               </p>
               <p className='break-all font-mono text-xs leading-6 text-slate-800 wrap-anywhere'>
-                {reference.data}
+                {orderReference ?? reference.data}
               </p>
             </div>
           )}

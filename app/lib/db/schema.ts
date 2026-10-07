@@ -88,6 +88,12 @@ export const orders = pgTable(
   'orders',
   {
     id: uuid('id').primaryKey().defaultRandom(),
+    reference: varchar('reference', { length: 32 })
+      .notNull()
+      .unique()
+      .default(
+        sql`'RITNA-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 12))`,
+      ),
     customerId: uuid('customer_id')
       .notNull()
       .references(() => customers.id),

@@ -1,3 +1,4 @@
+import { isTrustedCheckoutUrl } from '../payments/checkout-url';
 import {
   createSelectSchema,
   createInsertSchema,
@@ -122,24 +123,35 @@ export const preorderCheckoutResponseSchema = z.object({
   success: z.literal(true),
   data: z.object({
     orderId: z.uuid(),
-    paymentUrl: z.url().refine((value) => {
-      const url = new URL(value);
-      return (
-        url.protocol === 'https:' &&
-        ['checkout.paystack.com', 'checkout.bachs.io'].includes(url.hostname) &&
-        !url.username && !url.password
-      );
-    }),
+    paymentUrl: z.url().refine((value) => isTrustedCheckoutUrl(value)),
   }),
 });
 
-export const adminRecordsQuerySchema = z.object({
-  kind: z.enum(['orders', 'waitlist']),
-  page: z.coerce.number().int().min(0).max(1000000).default(0),
-  pageSize: z.coerce.number().pipe(z.union([z.literal(10), z.literal(25), z.literal(50)])).default(10),
-  search: z.string().trim().max(200).default(''),
-  sort: z.string().default('createdAt'),
-  direction: z.enum(['asc', 'desc']).default('desc'),
-}).refine((query) => (query.kind === 'orders'
-  ? ['id', 'customer', 'email', 'status', 'payment', 'createdAt']
-  : ['name', 'email', 'phone', 'category', 'createdAt']).includes(query.sort), { message: 'Invalid sort column.' });
+export const adminRecordsQuerySchema = z
+  .object({
+    kind: z.enum(['orders', 'waitlist']),
+    page: z.coerce.number().int().min(0).max(1000000).default(0),
+    pageSize: z.coerce
+      .number()
+      .pipe(z.union([z.literal(10), z.literal(25), z.literal(50)]))
+      .default(10),
+    search: z.string().trim().max(200).default(''),
+    sort: z.string().default('createdAt'),
+    direction: z.enum(['asc', 'desc']).default('desc'),
+  })
+  .refine(
+    (query) =>
+      (query.kind === 'orders'
+        ? [
+            'id',
+            'reference',
+            'customer',
+            'email',
+            'status',
+            'payment',
+            'createdAt',
+          ]
+        : ['name', 'email', 'phone', 'category', 'createdAt']
+      ).includes(query.sort),
+    { message: 'Invalid sort column.' },
+  );

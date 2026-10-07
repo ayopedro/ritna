@@ -7,7 +7,11 @@ import { db } from '@/app/lib/db';
 import { orders } from '@/app/lib/db/schema';
 import { initiatePaymentSchema } from '@/app/lib/validators';
 import { createOrderPayment } from '@/app/lib/payments/create-order-payment';
-import { isPaymentConfigured } from '@/app/lib/payments/configuration';
+import {
+  configuredProvider,
+  isPaymentConfigured,
+} from '@/app/lib/payments/configuration';
+import { getPaymentService } from '@/app/lib/payments/payment-service-factory';
 
 async function handlePOST(request: Request) {
   let body: unknown;
@@ -63,10 +67,13 @@ async function handlePOST(request: Request) {
         { status: 409 },
       );
     }
-    const paymentUrl = await createOrderPayment(order);
+    const paymentUrl = await createOrderPayment(
+      order,
+      getPaymentService(configuredProvider()),
+    );
     return NextResponse.json({
       success: true,
-      data: { orderId: order.id, paymentUrl },
+      data: { orderId: order.id, orderReference: order.reference, paymentUrl },
     });
   } catch (error) {
     logError('api.handled_error', error);

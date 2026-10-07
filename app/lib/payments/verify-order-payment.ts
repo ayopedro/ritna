@@ -3,8 +3,7 @@ import { sendOrderConfirmation } from '@/app/lib/email/send-order-confirmation';
 import { and, eq, ne } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
 import { orders, payments } from '@/app/lib/db/schema';
-import { verifyPaystack, validatePaymentMatch } from './paystack';
-import { verifyBachs } from './bachs';
+import { getPaymentService } from './payment-service-factory';
 
 export async function verifyOrderPayment(reference: string, provider?: string) {
   const [record] = await db
@@ -19,13 +18,8 @@ export async function verifyOrderPayment(reference: string, provider?: string) {
     )
     .limit(1);
   if (!record) throw new Error('Unknown payment reference.');
-  if (!['paystack', 'bachs'].includes(record.payment.provider)) throw new Error('Unknown payment provider.');
-  const verified = await (async () => {
-    if (record.payment.provider === 'bachs') return verifyBachs(record.payment, record.order);
-    const result = await verifyPaystack(reference);
-    if (result) validatePaymentMatch(record.payment, record.order, result);
-    return result;
-  })();
+  const service = getPaymentService(record.payment.provider);
+  const verified = await service.verify(record.payment, record.order);
   if (!verified) return { ...record, providerStatus: 'not_found' as const };
   let confirmationEmailPending = false;
   if (verified.status === 'success') {
@@ -53,7 +47,11 @@ export async function verifyOrderPayment(reference: string, provider?: string) {
           ),
         );
     });
-    log('info', 'payment.verified', { orderId: record.order.id, paymentId: record.payment.id, provider: record.payment.provider });
+    log('info', 'payment.verified', {
+      orderId: record.order.id,
+      paymentId: record.payment.id,
+      provider: record.payment.provider,
+    });
     try {
       await sendOrderConfirmation(record.order.id);
     } catch {

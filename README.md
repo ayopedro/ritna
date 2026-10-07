@@ -76,3 +76,25 @@ order retains its payment provider even when the configured default changes.
 
 API contract: [Bachs OpenAPI](https://docs.bachs.io/docs/openapi/openapi.json).
 Webhook signatures: [Bachs webhooks](https://docs.bachs.io/guides/webhooks/overview).
+
+Payment providers implement `PaymentService` and are selected by
+`getPaymentService(provider)`. Order routes supply the configured service;
+existing attempts and verification select the service recorded on the payment.
+Provider services own configuration, checkout initialization, and verification,
+while order persistence and confirmation remain shared.
+
+For checkout diagnostics, `payment.checkout_requested` logs the Bachs payload
+with customer identity redacted and callback query parameters removed.
+`payment.checkout_response` records the HTTP status and checkout hostname,
+without the session path or token. Both correlate with the request ID and order ID.
+Hosted checkout validation accepts HTTPS Bachs-owned domains and Paystack's
+checkout host, rejecting unrelated hosts, embedded credentials, and custom ports.
+
+Orders have a readable reference such as `RITNA-8F3A91C7D2B6`, generated from 12 random
+hexadecimal characters with a database unique constraint. Rare collisions retry
+reference allocation up to three times. Apply `bun run db.apply` before running the
+updated app; the migration also assigns references to existing orders. References
+appear in confirmation emails, the payment result page, and the admin orders table,
+where they can be searched and sorted. New provider payment references include the
+order reference; existing provider references remain valid. UUIDs remain internal
+identifiers. Retries reuse the saved order reference. Existing references retain their values. Previously sent receipts and emails are unchanged.

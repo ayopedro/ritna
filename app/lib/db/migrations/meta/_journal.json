@@ -50,6 +50,20 @@
       "when": 1791364662408,
       "tag": "20261007091742_violet_scorpion",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791367964414,
+      "tag": "20261007101244_last_bucky",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791368220943,
+      "tag": "20261007101700_blushing_jackal",
+      "breakpoints": true
     }
   ]
 }

@@ -4,7 +4,7 @@ import { eq, inArray, sql } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
 import { books, customers, orders, orderItems } from '@/app/lib/db/schema';
 import { AVAILABLE_BOOK_EDITIONS } from '@/app/lib/constants';
-import type { ValidatedPreorder } from '@/app/lib/types';
+import type { PreorderRecord, ValidatedPreorder } from '@/app/lib/types';
 
 export async function createPreorder(
   input: ValidatedPreorder,
@@ -100,28 +100,38 @@ export async function createPreorder(
       )[0];
     if (!savedCustomer) throw new Error('Customer could not be resolved.');
 
-    const [order] = await tx
-      .insert(orders)
-      .values({
-        customerId: savedCustomer.id,
-        idempotencyKey: idempotencyKey,
-        requestHash,
-        totalAmount,
-        currency: 'NGN',
-        shippingFullName: customer.fullName,
-        shippingEmail: customer.email,
-        shippingPhone: customer.phone,
-        shippingAddressLine1: customer.address,
-        shippingCity: customer.city,
-        shippingState: customer.state,
-        shippingNotes: customer.note,
-      })
-      .returning();
+    let order: PreorderRecord | undefined;
+    // A collision only retries reference allocation, preserving order idempotency.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      [order] = await tx
+        .insert(orders)
+        .values({
+          customerId: savedCustomer.id,
+          idempotencyKey: idempotencyKey,
+          requestHash,
+          totalAmount,
+          currency: 'NGN',
+          shippingFullName: customer.fullName,
+          shippingEmail: customer.email,
+          shippingPhone: customer.phone,
+          shippingAddressLine1: customer.address,
+          shippingCity: customer.city,
+          shippingState: customer.state,
+          shippingNotes: customer.note,
+        })
+        .onConflictDoNothing({ target: orders.reference })
+        .returning();
+      if (order) break;
+    }
+    if (!order) throw new Error('Could not allocate a unique order reference.');
     await tx
       .insert(orderItems)
       .values(lines.map((line) => ({ ...line, orderId: order.id })));
     return { order, status: 201 } as const;
   });
-  if (result.order) log('info', result.status === 201 ? 'order.created' : 'order.reused', { orderId: result.order.id });
+  if (result.order)
+    log('info', result.status === 201 ? 'order.created' : 'order.reused', {
+      orderId: result.order.id,
+    });
   return result;
 }

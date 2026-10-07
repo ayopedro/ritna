@@ -43,12 +43,12 @@ export function buildConfirmationEmail(
     from,
     to: [order.shippingEmail],
     reply_to: support,
-    subject: 'Your RITNA preorder is confirmed',
+    subject: `Your RITNA preorder ${order.reference} is confirmed`,
     text: [
       `Hello ${order.shippingFullName},`,
       '',
       'Your payment is confirmed. Thank you for preordering RITNA.',
-      `Order reference: ${order.id}`,
+      `Order reference: ${order.reference}`,
       '',
       ...items.map(
         (item) =>
@@ -82,7 +82,7 @@ export function buildConfirmationEmail(
         <p style="margin:0 0 6px;font-size:14px;font-weight:700">Delivery address</p>
         <p style="margin:0 0 24px;line-height:1.6;color:#4b5563">${address.map(escapeHtml).join('<br>')}</p>
         <p style="margin:0 0 6px;font-size:12px;color:#6b7280">Order reference</p>
-        <p style="margin:0;font-family:monospace;font-size:12px;word-break:break-all;color:#374151">${escapeHtml(order.id)}</p>
+        <p style="margin:0;font-family:monospace;font-size:12px;word-break:break-all;color:#374151">${escapeHtml(order.reference)}</p>
       </div>
       <p style="margin:16px 0 0;text-align:center;font-size:12px;color:#6b7280">Need help? Reply to this email or contact <a href="mailto:${escapeHtml(support)}" style="color:#2563eb">${escapeHtml(support)}</a>.</p>
     </div>
