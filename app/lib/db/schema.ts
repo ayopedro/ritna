@@ -88,6 +88,12 @@ export const orders = pgTable(
   'orders',
   {
     id: uuid('id').primaryKey().defaultRandom(),
+    reference: varchar('reference', { length: 32 })
+      .notNull()
+      .unique()
+      .default(
+        sql`'RITNA-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 12))`,
+      ),
     customerId: uuid('customer_id')
       .notNull()
       .references(() => customers.id),
@@ -167,6 +173,7 @@ export const payments = pgTable(
     currency: varchar('currency', { length: 3 }).default('NGN').notNull(),
     status: paymentStatusEnum('status').default('pending').notNull(),
     authorizationUrl: text('authorization_url'),
+    providerCheckoutId: varchar('provider_checkout_id', { length: 255 }),
     paidAt: timestamp('paid_at', { precision: 6, withTimezone: true }),
     createdAt: timestamp('created_at', { precision: 6, withTimezone: true })
       .defaultNow()

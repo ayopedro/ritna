@@ -170,10 +170,25 @@ export interface LogFields {
   provider?: string;
   errorType?: string;
   errorCode?: string;
+  errorMessage?: string;
+  providerErrorCode?: string;
+  providerErrorMessage?: string;
+  errorFields?: string[];
+  checkoutHost?: string;
+  checkoutPayload?: {
+    reference: string;
+    customer: { email: string; name: string };
+    pricing: { amount: string; currency: string; price_type: string };
+    billing_currency: string;
+    payment_method_types: string[];
+    success_url: string;
+    metadata: { orderId: string };
+  };
 }
 
 export interface AdminOrderRow {
   id: string;
+  reference: string;
   status: PreorderRecord['status'];
   paymentStatus: PreorderRecord['paymentStatus'];
   firstName: string;
@@ -210,7 +225,20 @@ export interface SelectionCheckboxProps {
   onChange: (checked: boolean) => void;
 }
 
-
-export type AdminRecordsQuery = import('zod').infer<typeof import('./validators').adminRecordsQuerySchema>;
-export interface AdminRecordsPage<T> { rows: T[]; totalCount: number; page: number; pageSize: number; }
-export type AdminBulkSelection = { mode: 'explicit'; records: Record<string, string> } | { mode: 'all'; search: string; totalCount: number; excluded: Record<string, true> };
+export type AdminRecordsQuery = import('zod').infer<
+  typeof import('./validators').adminRecordsQuerySchema
+>;
+export interface AdminRecordsPage<T> {
+  rows: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+export type AdminBulkSelection =
+  | { mode: 'explicit'; records: Record<string, string> }
+  | {
+      mode: 'all';
+      search: string;
+      totalCount: number;
+      excluded: Record<string, true>;
+    };

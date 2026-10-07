@@ -2,10 +2,7 @@
 
 import { useMemo } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
-import type {
-  AdminOrderRow,
-  AdminWaitlistRow,
-} from '@/app/lib/types';
+import type { AdminOrderRow, AdminWaitlistRow } from '@/app/lib/types';
 import { AdminDataTable } from './data-table';
 
 function formatDate(date: string | null) {
@@ -16,11 +13,11 @@ export function AdminTables() {
   const orders = useMemo<ColumnDef<AdminOrderRow>[]>(
     () => [
       {
-        accessorKey: 'id',
+        accessorKey: 'reference',
         header: 'Order',
         cell: ({ row }) => (
-          <span title={row.id} className='font-mono text-xs'>
-            #{row.id.slice(0, 8)}
+          <span title={row.original.id} className='font-mono text-xs'>
+            {row.original.reference}
           </span>
         ),
       },
@@ -84,16 +81,8 @@ export function AdminTables() {
   );
   return (
     <div className='min-w-0 space-y-6'>
-      <AdminDataTable
-        title='Orders'
-        kind='orders'
-        columns={orders}
-      />
-      <AdminDataTable
-        title='Waitlist'
-        kind='waitlist'
-        columns={waitlist}
-      />
+      <AdminDataTable title='Orders' kind='orders' columns={orders} />
+      <AdminDataTable title='Waitlist' kind='waitlist' columns={waitlist} />
     </div>
   );
 }

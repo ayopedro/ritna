@@ -14,6 +14,7 @@ afterEach(() => {
 });
 const order = {
   id: 'order-test',
+  reference: 'RITNA-8F3A91C7D2B6',
   shippingFullName: 'Test Reader',
   shippingEmail: 'reader@example.com',
   shippingAddressLine1: '1 Main Street',
@@ -33,7 +34,7 @@ test('confirmation includes order details and excludes a delivery timeline', () 
   expect(payload.to).toEqual(['reader@example.com']);
   expect(payload.reply_to).toBe('support@example.com');
   for (const value of [
-    'order-test',
+    'RITNA-8F3A91C7D2B6',
     'RITNA Hardcover × 2',
     '70,000',
     '1 Main Street',
@@ -46,7 +47,7 @@ test('confirmation includes order details and excludes a delivery timeline', () 
     'RITNA Hardcover × 2',
     'NGN 70,000',
     '1 Main Street',
-    'order-test',
+    'RITNA-8F3A91C7D2B6',
   ])
     expect(payload.html).toContain(value);
   expect(payload.text).not.toMatch(
@@ -96,4 +97,12 @@ test('email provider failures are surfaced for retry', async () => {
       { status: 503 },
     )) as unknown as typeof fetch;
   await expect(sendConfirmationEmail(payload, order.id)).rejects.toThrow();
+});
+
+test('confirmation identifies the order by its readable reference instead of its internal UUID', () => {
+  expect(payload.subject).toContain('RITNA-8F3A91C7D2B6');
+  expect(payload.text).toContain('Order reference: RITNA-8F3A91C7D2B6');
+  expect(payload.html).toContain('RITNA-8F3A91C7D2B6');
+  expect(payload.text).not.toContain(order.id);
+  expect(payload.html).not.toContain(order.id);
 });

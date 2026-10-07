@@ -2,6 +2,11 @@ import { logError } from '@/app/lib/logger';
 import { withApi } from '@/app/lib/api/handler';
 import { createPreorder } from '@/app/lib/orders/create-preorder';
 import { createOrderPayment } from '@/app/lib/payments/create-order-payment';
+import {
+  configuredProvider,
+  isPaymentConfigured,
+} from '@/app/lib/payments/configuration';
+import { getPaymentService } from '@/app/lib/payments/payment-service-factory';
 import { createPreorderSchema } from '@/app/lib/validators';
 import { NextResponse } from 'next/server';
 import * as z from 'zod';
@@ -37,7 +42,7 @@ async function handlePOST(request: Request) {
     );
   }
 
-  if (!process.env.PAYSTACK_SECRET_KEY) {
+  if (!isPaymentConfigured()) {
     return NextResponse.json(
       { success: false, message: 'Payment service is not configured.' },
       { status: 503 },
@@ -66,15 +71,21 @@ async function handlePOST(request: Request) {
     }
     let paymentUrl: string;
     try {
-      paymentUrl = await createOrderPayment(result.order);
+      paymentUrl = await createOrderPayment(
+        result.order,
+        getPaymentService(configuredProvider()),
+      );
     } catch (error) {
-      logError('api.handled_error', error);
+      logError('payment.checkout_failed', error, { orderId: result.order.id });
       return NextResponse.json(
         {
           success: false,
           message:
             'Your order was saved, but its payment link is not available yet. Retry shortly; if this persists, contact support with your order ID.',
-          data: { orderId: result.order.id },
+          data: {
+            orderId: result.order.id,
+            orderReference: result.order.reference,
+          },
         },
         { status: 502 },
       );
@@ -82,9 +93,10 @@ async function handlePOST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Preorder created. Continue to Paystack to pay.',
+        message: 'Preorder created. Continue to checkout to pay.',
         data: {
           orderId: result.order.id,
+          orderReference: result.order.reference,
           paymentUrl,
           totalAmount: result.order.totalAmount,
           currency: result.order.currency,

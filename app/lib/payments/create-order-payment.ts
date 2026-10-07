@@ -4,17 +4,27 @@ import { db } from '@/app/lib/db';
 import { payments } from '@/app/lib/db/schema';
 import type { PreorderRecord } from '@/app/lib/types';
 import { verifyOrderPayment } from './verify-order-payment';
-import { initializePaystack } from './paystack';
+import { getPaymentService } from './payment-service-factory';
+import type { PaymentService } from './payment-service';
+import { PaymentError } from './payment-error';
+import { configuredProvider } from './configuration';
 
-export async function createOrderPayment(order: PreorderRecord) {
+export async function createOrderPayment(
+  order: PreorderRecord,
+  paymentService?: PaymentService,
+) {
   const [existing] = await db
     .select()
     .from(payments)
     .where(eq(payments.orderId, order.id))
     .orderBy(desc(payments.createdAt))
     .limit(1);
+  const service = existing
+    ? getPaymentService(existing.provider)
+    : (paymentService ?? getPaymentService(configuredProvider()));
+  const provider = service.provider;
   let attemptKey = order.idempotencyKey;
-  let reference = `preorder-${order.id}`;
+  let reference = `preorder-${order.reference}`;
   if (existing) {
     if (existing.status === 'succeeded')
       throw new Error('Payment already confirmed.');
@@ -22,26 +32,32 @@ export async function createOrderPayment(order: PreorderRecord) {
       !existing.authorizationUrl &&
       Date.now() - existing.createdAt.getTime() < 30000
     ) {
-      throw new Error('Payment initialization is in progress.');
+      throw new PaymentError(
+        'PAYMENT_INITIALIZATION_IN_PROGRESS',
+        'Payment initialization is in progress; retry after 30 seconds.',
+        { provider },
+      );
     }
     const recovered = await verifyOrderPayment(existing.providerReference);
     if (recovered.providerStatus === 'success')
       throw new Error('Payment already confirmed.');
     if (recovered.providerStatus === 'failed') {
       attemptKey = existing.id;
-      reference = `preorder-${randomUUID()}`;
+      reference = `preorder-${order.reference}-${randomUUID().replaceAll('-', '').slice(0, 12)}`;
     } else if (recovered.providerStatus === 'not_found') {
-      const url = await initializePaystack({
+      const checkout = await service.initialize({
         email: order.shippingEmail,
+        name: order.shippingFullName,
         amount: existing.amount,
+        currency: existing.currency,
         reference: existing.providerReference,
         orderId: order.id,
       });
       await db
         .update(payments)
-        .set({ authorizationUrl: url, updatedAt: new Date() })
+        .set({ ...checkout, updatedAt: new Date() })
         .where(eq(payments.id, existing.id));
-      return url;
+      return checkout.authorizationUrl;
     } else if (
       existing.authorizationUrl &&
       recovered.providerStatus !== 'reversed'
@@ -49,7 +65,7 @@ export async function createOrderPayment(order: PreorderRecord) {
       return existing.authorizationUrl;
     } else {
       throw new Error(
-        'Payment exists at Paystack but its checkout link could not be recovered.',
+        'Payment exists at the provider but its checkout link could not be recovered.',
       );
     }
   }
@@ -57,7 +73,7 @@ export async function createOrderPayment(order: PreorderRecord) {
     .insert(payments)
     .values({
       orderId: order.id,
-      provider: 'paystack',
+      provider,
       providerReference: reference,
       idempotencyKey: attemptKey,
       amount: order.totalAmount,
@@ -66,16 +82,22 @@ export async function createOrderPayment(order: PreorderRecord) {
     .onConflictDoNothing({ target: payments.idempotencyKey })
     .returning();
   if (!attempt)
-    throw new Error('Payment initialization is already in progress.');
-  const authorizationUrl = await initializePaystack({
+    throw new PaymentError(
+      'PAYMENT_INITIALIZATION_CONFLICT',
+      'Another request already created this payment attempt; retry with the same checkout key.',
+      { provider },
+    );
+  const checkout = await service.initialize({
     email: order.shippingEmail,
+    name: order.shippingFullName,
     amount: attempt.amount,
+    currency: attempt.currency,
     reference: attempt.providerReference,
     orderId: order.id,
   });
   await db
     .update(payments)
-    .set({ authorizationUrl, updatedAt: new Date() })
+    .set({ ...checkout, updatedAt: new Date() })
     .where(eq(payments.id, attempt.id));
-  return authorizationUrl;
+  return checkout.authorizationUrl;
 }

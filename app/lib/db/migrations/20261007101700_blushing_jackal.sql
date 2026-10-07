@@ -1,0 +1,2 @@
+ALTER TABLE "orders" ALTER COLUMN "reference" SET DEFAULT 'RITNA-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 12));--> statement-breakpoint
+DROP SEQUENCE "public"."order_reference_sequence";
