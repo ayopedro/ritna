@@ -1,3 +1,4 @@
+import { emitTelemetryLog } from './telemetry/logs';
 import { traceFields } from './telemetry/tracing';
 import { PaymentError } from './payments/payment-error';
 import { AsyncLocalStorage } from 'node:async_hooks';
@@ -36,6 +37,23 @@ export function log(
     ...logContext.getStore(),
     ...traceFields(),
     ...safe,
+  });
+  const context = logContext.getStore();
+  emitTelemetryLog(level, line, {
+    'event.name': event,
+    ...(context
+      ? {
+          'request.id': context.requestId,
+          'http.route': context.route,
+          'http.request.method': context.method,
+        }
+      : {}),
+    ...(typeof safe.status === 'number'
+      ? { 'http.response.status_code': safe.status }
+      : {}),
+    ...(typeof safe.provider === 'string'
+      ? { 'payment.provider': safe.provider }
+      : {}),
   });
   if (level === 'error') console.error(line);
   else if (level === 'warn') console.warn(line);
