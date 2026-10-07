@@ -82,7 +82,7 @@ async function handlePOST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Preorder created. Continue to Paystack to pay.',
+        message: 'Preorder created. Continue to checkout to pay.',
         data: {
           orderId: result.order.id,
           paymentUrl,

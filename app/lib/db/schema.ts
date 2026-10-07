@@ -167,6 +167,7 @@ export const payments = pgTable(
     currency: varchar('currency', { length: 3 }).default('NGN').notNull(),
     status: paymentStatusEnum('status').default('pending').notNull(),
     authorizationUrl: text('authorization_url'),
+    providerCheckoutId: varchar('provider_checkout_id', { length: 255 }),
     paidAt: timestamp('paid_at', { precision: 6, withTimezone: true }),
     createdAt: timestamp('created_at', { precision: 6, withTimezone: true })
       .defaultNow()

@@ -29,7 +29,7 @@ async function handlePOST(request: Request) {
   if (!reference.data.startsWith('preorder-'))
     return NextResponse.json({ received: true });
   try {
-    const result = await verifyOrderPayment(reference.data);
+    const result = await verifyOrderPayment(reference.data, 'paystack');
     if (result.providerStatus !== 'success' || result.confirmationEmailPending)
       return new NextResponse(null, { status: 503 });
     return NextResponse.json({ received: true });

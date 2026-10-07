@@ -12,7 +12,7 @@ function publicOrigin(value: string): string {
 }
 
 export function getPaymentResultUrl(request: Request, reference: string): URL {
-  const configuredCallback = process.env.PAYSTACK_CALLBACK_URL?.trim();
+  const configuredCallback = (process.env.PAYMENT_PROVIDER === 'bachs' ? process.env.BACHS_CALLBACK_URL : process.env.PAYSTACK_CALLBACK_URL)?.trim();
   let origin: string;
   if (configuredCallback) {
     origin = publicOrigin(configuredCallback);

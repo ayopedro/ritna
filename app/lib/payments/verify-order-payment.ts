@@ -4,8 +4,9 @@ import { and, eq, ne } from 'drizzle-orm';
 import { db } from '@/app/lib/db';
 import { orders, payments } from '@/app/lib/db/schema';
 import { verifyPaystack, validatePaymentMatch } from './paystack';
+import { verifyBachs } from './bachs';
 
-export async function verifyOrderPayment(reference: string) {
+export async function verifyOrderPayment(reference: string, provider?: string) {
   const [record] = await db
     .select({ payment: payments, order: orders })
     .from(payments)
@@ -13,14 +14,19 @@ export async function verifyOrderPayment(reference: string) {
     .where(
       and(
         eq(payments.providerReference, reference),
-        eq(payments.provider, 'paystack'),
+        ...(provider ? [eq(payments.provider, provider)] : []),
       ),
     )
     .limit(1);
   if (!record) throw new Error('Unknown payment reference.');
-  const verified = await verifyPaystack(reference);
+  if (!['paystack', 'bachs'].includes(record.payment.provider)) throw new Error('Unknown payment provider.');
+  const verified = await (async () => {
+    if (record.payment.provider === 'bachs') return verifyBachs(record.payment, record.order);
+    const result = await verifyPaystack(reference);
+    if (result) validatePaymentMatch(record.payment, record.order, result);
+    return result;
+  })();
   if (!verified) return { ...record, providerStatus: 'not_found' as const };
-  validatePaymentMatch(record.payment, record.order, verified);
   let confirmationEmailPending = false;
   if (verified.status === 'success') {
     await db.transaction(async (tx) => {
@@ -47,7 +53,7 @@ export async function verifyOrderPayment(reference: string) {
           ),
         );
     });
-    log('info', 'payment.verified', { orderId: record.order.id, paymentId: record.payment.id, provider: 'paystack' });
+    log('info', 'payment.verified', { orderId: record.order.id, paymentId: record.payment.id, provider: record.payment.provider });
     try {
       await sendOrderConfirmation(record.order.id);
     } catch {

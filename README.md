@@ -56,3 +56,23 @@ Events include `api.request_completed`, `api.unhandled_error`, `order.created`, 
 The unimplemented order listing/detail, customer detail, and payment listing endpoints return HTTP 501 instead of placeholder successes. Customer lists are limited to 100 records. Unknown server errors return a generic JSON response rather than database details.
 
 Run `bun test tests/unit` for authentication, logging, payment, and email unit checks. Database integration and browser checks require the configured database and Playwright browser installation.
+
+### Bachs payments
+
+Apply the database migration with `bun run db.apply` before deploying this change.
+To use Bachs for new orders, set `PAYMENT_PROVIDER=bachs`, `BACHS_API_KEY`,
+`BACHS_CALLBACK_URL=https://your-domain/api/payments/callback`, and
+`BACHS_WEBHOOK_SECRET`. Keep Paystack credentials configured to verify existing
+Paystack orders. In Bachs, register `https://your-domain/api/payments/webhook/bachs`
+for `collection.succeeded` and `checkout.completed` events using an account-scoped
+endpoint. Use the endpoint's signing secret as `BACHS_WEBHOOK_SECRET`.
+
+`sk_sandbox_` keys use the sandbox API; `sk_live_` keys use production. Checkout
+collects the order total in NGN with card or bank transfer. Server-side verification
+checks the checkout, order reference, customer, currency, amount, and settled charge
+before confirming the order. Open sessions are reused; expired or cancelled sessions
+can be replaced. Initialization retries use the same idempotency key. An existing
+order retains its payment provider even when the configured default changes.
+
+API contract: [Bachs OpenAPI](https://docs.bachs.io/docs/openapi/openapi.json).
+Webhook signatures: [Bachs webhooks](https://docs.bachs.io/guides/webhooks/overview).

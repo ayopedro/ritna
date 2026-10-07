@@ -125,7 +125,9 @@ export const preorderCheckoutResponseSchema = z.object({
     paymentUrl: z.url().refine((value) => {
       const url = new URL(value);
       return (
-        url.protocol === 'https:' && url.hostname === 'checkout.paystack.com'
+        url.protocol === 'https:' &&
+        ['checkout.paystack.com', 'checkout.bachs.io'].includes(url.hostname) &&
+        !url.username && !url.password
       );
     }),
   }),

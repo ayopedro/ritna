@@ -46,7 +46,7 @@ const statuses = {
     label: 'Payment unsuccessful',
     title: "Let's get this sorted.",
     message:
-      "Paystack reports that this payment was unsuccessful. Your preorder payment hasn't been confirmed.",
+      "The payment provider reports that this payment was unsuccessful. Your preorder payment hasn't been confirmed.",
     detail:
       'Contact us with your payment reference for help retrying. If you were debited, mention that in your message.',
     icon: TriangleAlert,
@@ -55,7 +55,7 @@ const statuses = {
   reversed: {
     label: 'Payment reversed',
     title: 'Your payment was reversed.',
-    message: 'Paystack reports that this payment has been reversed.',
+    message: 'The payment provider reports that this payment has been reversed.',
     detail:
       'Contact us with your payment reference before attempting another payment.',
     icon: RefreshCw,
@@ -232,7 +232,7 @@ export default async function PaymentResult({
             ) : (
               <ShieldCheck aria-hidden='true' size={14} />
             )}
-            Payments processed by Paystack
+            Secure payment processing
           </div>
         </section>
       </div>
