@@ -1,3 +1,4 @@
+import { traceFields } from './telemetry/tracing';
 import { PaymentError } from './payments/payment-error';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import type { LogContext, LogFields } from '@/app/lib/types';
@@ -33,6 +34,7 @@ export function log(
     level,
     event,
     ...logContext.getStore(),
+    ...traceFields(),
     ...safe,
   });
   if (level === 'error') console.error(line);

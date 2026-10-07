@@ -1,3 +1,4 @@
+import { withSpan } from '../telemetry/tracing';
 import { log } from '@/app/lib/logger';
 import { sendOrderConfirmation } from '@/app/lib/email/send-order-confirmation';
 import { and, eq, ne } from 'drizzle-orm';
@@ -23,30 +24,37 @@ export async function verifyOrderPayment(reference: string, provider?: string) {
   if (!verified) return { ...record, providerStatus: 'not_found' as const };
   let confirmationEmailPending = false;
   if (verified.status === 'success') {
-    await db.transaction(async (tx) => {
-      await tx
-        .update(payments)
-        .set({
-          status: 'succeeded',
-          paidAt: verified.paid_at ? new Date(verified.paid_at) : new Date(),
-          updatedAt: new Date(),
-        })
-        .where(
-          and(
-            eq(payments.id, record.payment.id),
-            ne(payments.status, 'succeeded'),
-          ),
-        );
-      await tx
-        .update(orders)
-        .set({ paymentStatus: 'succeeded', updatedAt: new Date() })
-        .where(
-          and(
-            eq(orders.id, record.order.id),
-            ne(orders.paymentStatus, 'succeeded'),
-          ),
-        );
-    });
+    await withSpan(
+      'db.confirm_payment',
+      { 'db.system.name': 'postgresql', 'db.operation.name': 'transaction' },
+      () =>
+        db.transaction(async (tx) => {
+          await tx
+            .update(payments)
+            .set({
+              status: 'succeeded',
+              paidAt: verified.paid_at
+                ? new Date(verified.paid_at)
+                : new Date(),
+              updatedAt: new Date(),
+            })
+            .where(
+              and(
+                eq(payments.id, record.payment.id),
+                ne(payments.status, 'succeeded'),
+              ),
+            );
+          await tx
+            .update(orders)
+            .set({ paymentStatus: 'succeeded', updatedAt: new Date() })
+            .where(
+              and(
+                eq(orders.id, record.order.id),
+                ne(orders.paymentStatus, 'succeeded'),
+              ),
+            );
+        }),
+    );
     log('info', 'payment.verified', {
       orderId: record.order.id,
       paymentId: record.payment.id,

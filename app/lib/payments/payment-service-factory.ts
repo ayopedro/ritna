@@ -1,3 +1,4 @@
+import { withSpan } from '../telemetry/tracing';
 import type { PaymentRecord, PreorderRecord } from '@/app/lib/types';
 import { initializeBachs, verifyBachs } from './bachs';
 import {
@@ -60,5 +61,23 @@ export function getPaymentService(provider: string): PaymentService {
       'PAYMENT_PROVIDER_UNKNOWN',
       'Unknown payment provider.',
     );
-  return services[provider];
+  const service = services[provider];
+  return {
+    provider: service.provider,
+    isConfigured: () => service.isConfigured(),
+    initialize: (input) =>
+      withSpan('payment.initialize', { 'payment.provider': provider }, () =>
+        service.initialize(input),
+      ),
+    verify: (payment, order) =>
+      withSpan(
+        'payment.verify',
+        { 'payment.provider': provider },
+        async (span) => {
+          const result = await service.verify(payment, order);
+          span.setAttribute('payment.status', result?.status ?? 'not_found');
+          return result;
+        },
+      ),
+  };
 }

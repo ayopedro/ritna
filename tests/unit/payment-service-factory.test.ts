@@ -12,8 +12,9 @@ afterEach(() => {
 });
 
 test('factory selects provider services and rejects unknown or inherited property names', () => {
-  expect(getPaymentService('bachs')).toBeInstanceOf(BachsPaymentService);
-  expect(getPaymentService('paystack')).toBeInstanceOf(PaystackPaymentService);
+  expect(getPaymentService('bachs').provider).toBe('bachs');
+  expect(new BachsPaymentService().provider).toBe('bachs');
+  expect(getPaymentService('paystack').provider).toBe('paystack');
   for (const provider of ['unknown', 'constructor', '__proto__'])
     expect(() => getPaymentService(provider)).toThrow(
       'Unknown payment provider.',

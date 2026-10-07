@@ -49,7 +49,7 @@ Admin access continues to use browser Basic Auth with `ADMIN_USERNAME` and `ADMI
 
 Private APIs include admin overview, customer endpoints, order listing/detail, and payment listing. Public checkout, books, waitlist, callback, and signed webhook routes remain accessible. Private POST requests also require an `Origin` header matching the application origin.
 
-All API handlers write structured JSON logs to standard output/error. Your hosting platform can collect these logs; no external monitoring service is configured. Each response has an `X-Request-ID` header. Search that ID to correlate the route, method, response status, duration, and related service events. Routes are logged as templates, without query strings or customer identifiers from URLs.
+All API handlers write structured JSON logs to standard output/error. Your hosting platform can collect these logs; optional OpenTelemetry tracing can export to an OTLP collector (see below). Each response has an `X-Request-ID` header. Search that ID to correlate the route, method, response status, duration, and related service events. Routes are logged as templates, without query strings or customer identifiers from URLs.
 
 Events include `api.request_completed`, `api.unhandled_error`, `order.created`, `order.reused`, `payment.initialized`, `payment.verified`, `email.confirmation_sent`, and `email.confirmation_pending`. Unexpected errors record their type and recognized database/network code, without raw messages, SQL, request bodies, cookies, credentials, or customer contact details.
 
@@ -98,3 +98,33 @@ appear in confirmation emails, the payment result page, and the admin orders tab
 where they can be searched and sorted. New provider payment references include the
 order reference; existing provider references remain valid. UUIDs remain internal
 identifiers. Retries reuse the saved order reference. Existing references retain their values. Previously sent receipts and emails are unchanged.
+
+
+### OpenTelemetry tracing
+
+The Next.js `instrumentation.ts` hook registers OpenTelemetry on the server when
+`OTEL_EXPORTER_OTLP_ENDPOINT` or `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` is configured.
+Set `OTEL_SERVICE_NAME=ritna` and `OTEL_EXPORTER_OTLP_ENDPOINT` to your Alloy or
+OpenTelemetry collector's HTTP base URL; `/v1/traces` is appended automatically.
+Alternatively, set `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` to the complete URL,
+including `/v1/traces`. Avoid a trailing slash on the base URL. Use
+`OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf` (HTTP port 4318, not gRPC port 4317).
+For collector authentication, `OTEL_EXPORTER_OTLP_HEADERS` accepts comma-separated
+headers with URL-encoded values, for example `Authorization=Basic%20<base64 credentials>`.
+These variables are server-only; never prefix them with `NEXT_PUBLIC_`.
+
+Traces include Next.js framework spans, API route spans, payment initialization and
+verification, and database transactions for creating orders and confirming payment.
+Logs remain structured JSON on stdout/stderr for collection by Alloy, with `traceId`
+and `spanId` linking them to active traces. API responses include `X-Trace-ID` when
+tracing is active. There is no browser SDK or OTLP log/metrics exporter in this setup.
+
+Spans record route templates, provider names, status and timings. Customer details,
+checkout session URLs, raw SQL, headers, and raw exception messages are excluded.
+Fetch auto-instrumentation is disabled; provider service spans trace the full operation.
+
+Restart/redeploy after configuration changes. No endpoint means tracing stays off;
+`OTEL_SDK_DISABLED=true` disables SDK startup explicitly. To sample fewer requests,
+set `OTEL_TRACES_SAMPLER=parentbased_traceidratio` and `OTEL_TRACES_SAMPLER_ARG=0.1`
+for 10% of root traces. Export is batched and requires the collector to accept OTLP
+traces. This does not provision Alloy, Tempo, or a Grafana dashboard.
