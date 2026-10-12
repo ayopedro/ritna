@@ -1,0 +1,1 @@
+ALTER TABLE "payments" ADD COLUMN "provider_checkout_id" varchar(255);

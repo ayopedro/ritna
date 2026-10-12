@@ -1,3 +1,4 @@
+import { log, logError } from '../logger';
 import { SQL } from 'bun';
 import { drizzle } from 'drizzle-orm/bun-sql';
 import { migrate } from 'drizzle-orm/bun-sql/migrator';
@@ -6,7 +7,7 @@ import * as schema from './schema';
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  console.error('DATABASE_URL is not set');
+  log('error', 'database.configuration_missing');
   process.exit(1);
 }
 
@@ -19,18 +20,18 @@ async function runMigrations() {
     const db = drizzle({ client, schema });
 
     try {
-      console.log(`Migration attempt ${currentRetry + 1}...`);
+      log('info', 'database.migration_started');
       
       await client`SELECT 1`; 
       
       await migrate(db, { migrationsFolder: './app/lib/db/migrations' });
       
-      console.log('✅ Migrations applied successfully');
+      log('info', 'database.migration_completed');
       await client.end();
       return;
     } catch (error) {
       currentRetry++;
-      console.error(`❌ Migration attempt ${currentRetry} failed:`, (error as Error).message);
+      logError('database.migration_failed', error);
       
       await client.end();
       

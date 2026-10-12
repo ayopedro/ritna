@@ -1,9 +1,6 @@
+import type { ButtonProps } from "@/lib/types";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  text?: string;
-}
 
 export function Button({ text = "Join Waitlist", className, ...props }: ButtonProps) {
   return (

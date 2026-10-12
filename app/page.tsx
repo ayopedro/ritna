@@ -2,8 +2,9 @@ import { Hero } from "@/app/components/hero";
 import { AboutAuthor } from "@/components/about-author";
 import { AboutBook } from "@/components/about-book";
 import { Reviews } from "@/components/reviews";
-import { Waitlist } from "@/app/components/waitlist";
 import { Footer } from "@/components/footer";
+
+export const dynamic = "force-dynamic";
 
 export default function Home() {
   return (
@@ -16,7 +17,6 @@ export default function Home() {
       </div>
       <AboutBook />
       <Reviews />
-      <Waitlist />
       <Footer />
     </main>
   );

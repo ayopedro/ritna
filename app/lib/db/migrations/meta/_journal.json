@@ -29,6 +29,48 @@
       "when": 1777898624938,
       "tag": "20260504124344_odd_shooting_star",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789561101174,
+      "tag": "20260916121821_soft_thunderbolts",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790806567822,
+      "tag": "20260930221607_loose_lyja",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791364662408,
+      "tag": "20261007091742_violet_scorpion",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791367964414,
+      "tag": "20261007101244_last_bucky",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791368220943,
+      "tag": "20261007101700_blushing_jackal",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791382907204,
+      "tag": "20261007142147_sour_alex_power",
+      "breakpoints": true
     }
   ]
 }
