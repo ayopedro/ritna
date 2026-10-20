@@ -59,7 +59,7 @@ export default function AdminPage() {
           className='mb-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3'
         >
           <div className='rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:p-5'>
-            <p className='text-sm text-slate-500'>Orders</p>
+            <p className='text-sm text-slate-500'>Successful Orders</p>
             <p className='mt-2 text-3xl font-semibold tabular-nums'>
               {data?.orderCount}
             </p>
