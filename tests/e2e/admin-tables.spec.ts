@@ -13,6 +13,8 @@ test('admin tables preserve selection across pages and adapt to mobile', async (
     firstName: `Reader ${index}`,
     lastName: 'Test',
     email: `reader${index}@example.com`,
+    phone: `0800000000${index}`,
+    address: `${index} Reader Street, Lagos, Lagos`,
     status: 'pending',
     paymentStatus: index === 0 ? 'succeeded' : 'pending',
     createdAt: '2026-09-30T10:00:00Z',
@@ -40,6 +42,8 @@ test('admin tables preserve selection across pages and adapt to mobile', async (
   });
   await page.goto('/admin');
   const orders = page.getByRole('region', { name: 'Orders', exact: true });
+  await expect(orders.getByText('08000000000')).toBeVisible();
+  await expect(orders.getByText('0 Reader Street, Lagos, Lagos')).toBeVisible();
   await orders
     .getByRole('checkbox', { name: 'Select all orders on this page' })
     .check();

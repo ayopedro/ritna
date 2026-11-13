@@ -12,7 +12,8 @@
     "db.apply": "bun run ./app/lib/db/migrate.ts",
     "db.seed": "bun run ./app/lib/db/seed.ts",
     "db.push": "drizzle-kit push",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "cron:expire-pending-payments": "bun ./scripts/run-pending-payment-expiry.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

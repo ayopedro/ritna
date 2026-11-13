@@ -14,6 +14,8 @@ export function adminRecordQuery(query: AdminRecordsQuery) {
     reference: orders.reference,
     customer: name,
     email: customers.email,
+    phone: orders.shippingPhone,
+    address: sql<string>`concat_ws(', ', ${orders.shippingAddressLine1}, ${orders.shippingAddressLine2}, ${orders.shippingCity}, ${orders.shippingState})`,
     status: orders.status,
     payment,
     createdAt: orders.createdAt,
@@ -36,6 +38,8 @@ export function adminRecordQuery(query: AdminRecordsQuery) {
           ilike(sql`${orders.id}::text`, pattern),
           ilike(name, pattern),
           ilike(customers.email, pattern),
+          ilike(orders.shippingPhone, pattern),
+          ilike(sql`concat_ws(', ', ${orders.shippingAddressLine1}, ${orders.shippingAddressLine2}, ${orders.shippingCity}, ${orders.shippingState})`, pattern),
           ilike(sql`${orders.status}::text`, pattern),
           ilike(payment, pattern),
         )
