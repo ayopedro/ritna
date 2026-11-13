@@ -29,11 +29,22 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deploy on Railway
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Deploy the web service from this repository's Dockerfile and configure its
+environment variables in Railway.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See the [Railway deployment documentation](https://docs.railway.com/guides/deployments)
+for platform setup.
+
+## Pending-payment expiry
+
+Create a separate Railway service from this repository and set its start command
+to `bun scripts/run-pending-payment-expiry.ts`. Configure its cron schedule as
+`0 0 * * *` (UTC), and set the same `ADMIN_APP_URL` and private `CRON_SECRET`
+variables used by the web service. The job verifies pending provider payments
+first, then marks unresolved payments older than `PENDING_PAYMENT_EXPIRY_HOURS`
+(24 by default) as failed and cancels their still-pending orders.
 
 ## Admin
 

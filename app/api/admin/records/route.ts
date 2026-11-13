@@ -1,4 +1,4 @@
-import { count, eq } from 'drizzle-orm';
+import { count, eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { withApi } from '@/app/lib/api/handler';
 import { db } from '@/app/lib/db';
@@ -45,6 +45,8 @@ export const GET = withApi(
                   firstName: customers.firstName,
                   lastName: customers.lastName,
                   email: customers.email,
+                  phone: orders.shippingPhone,
+                  address: sql<string>`concat_ws(', ', ${orders.shippingAddressLine1}, ${orders.shippingAddressLine2}, ${orders.shippingCity}, ${orders.shippingState})`,
                 })
                 .from(orders)
                 .innerJoin(customers, eq(orders.customerId, customers.id))

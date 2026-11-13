@@ -195,6 +195,8 @@ export interface AdminOrderRow {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string | null;
+  address: string;
   createdAt: string | null;
 }
 

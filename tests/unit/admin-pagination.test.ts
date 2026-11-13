@@ -14,7 +14,6 @@ test('pagination validates bounds and entity-specific sort fields', () => {
   for (const input of [
     { page: -1 },
     { pageSize: 10000 },
-    { sort: 'phone' },
     { direction: 'invalid' },
     { search: 'a'.repeat(201) },
   ]) {
@@ -22,6 +21,12 @@ test('pagination validates bounds and entity-specific sort fields', () => {
       adminRecordsQuerySchema.safeParse({ kind: 'orders', ...input }).success,
     ).toBe(false);
   }
+  expect(
+    adminRecordsQuerySchema.safeParse({
+      kind: 'orders',
+      sort: 'phone',
+    }).success,
+  ).toBe(true);
   expect(
     adminRecordsQuerySchema.safeParse({
       kind: 'waitlist',

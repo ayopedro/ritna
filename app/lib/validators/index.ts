@@ -147,6 +147,8 @@ export const adminRecordsQuerySchema = z
             'reference',
             'customer',
             'email',
+            'phone',
+            'address',
             'status',
             'payment',
             'createdAt',
