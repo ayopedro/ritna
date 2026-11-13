@@ -28,6 +28,12 @@ export function AdminTables() {
       },
       { accessorKey: 'email', header: 'Email' },
       {
+        accessorKey: 'phone',
+        header: 'Phone',
+        cell: ({ getValue }) => getValue() ?? '—',
+      },
+      { accessorKey: 'address', header: 'Delivery address' },
+      {
         accessorKey: 'status',
         header: 'Order status',
         cell: ({ row }) => (

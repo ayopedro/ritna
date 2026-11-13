@@ -29,6 +29,7 @@ RUN groupadd --system --gid 1001 nodejs && \
 COPY --from=builder /usr/src/app/public ./public
 COPY --from=builder --chown=ritna:nodejs /usr/src/app/.next/standalone ./
 COPY --from=builder --chown=ritna:nodejs /usr/src/app/.next/static ./.next/static
+COPY --from=builder --chown=ritna:nodejs /usr/src/app/scripts ./scripts
 
 USER ritna
 EXPOSE 3000
